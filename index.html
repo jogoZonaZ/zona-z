@@ -408,6 +408,7 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="sons.js"></script>
+<script src="sons-armas.js" async></script>
 <script>
 (function(){
 'use strict';
@@ -676,8 +677,9 @@ function escola(){
   andar(0,T0,true); andar(ESC_Y,T1,false);
   // paredes ao lado das duas rampas (valem para os dois andares) e postes nos cantos do pátio
   obs.push([-21.5,19,.4,8,ESC_Y+1.1,'parede',0,0],[21.5,19,.4,8,ESC_Y+1.1,'parede',0,0]);
-  // terceira rampa, na sala do meio do lado sul (que vira escadaria): sobe de z = -24 a -15 e chega num patamar
-  // na frente da porta do corredor de cima; parede ao lado da rampa e mureta na beira do patamar
+  // terceira rampa, na sala do meio do lado sul (que vira escadaria): sobe de z = -25 a -16,5 e termina
+  // exatamente na beira do patamar (que vai de -16,5 até a porta do corredor de cima), sem degrau;
+  // parede ao lado da rampa e mureta na beira do patamar
   obs.push([1.5,-20,.4,8,ESC_Y+1.1,'parede',0,0],[-2,-16.65,6.6,.3,Y+1.1,'grade',0,Y]);
   obs.push([-13.5,-9.5,.3,.3,5,'poste',0,0],[13.5,9.5,.3,.3,5,'poste',0,0]);
   // quadra no pátio: duas traves de futsal e quatro bancos encostados nas paredes
@@ -700,7 +702,7 @@ function escola(){
     // telhados sobre as salas; a varanda fica a céu aberto
     tetos:[[-30,30,14.5,26,T1],[-30,30,-26,-14.5,T1],[-30,-18.5,-10.5,10.5,T1],[18.5,30,-10.5,10.5,T1]],
     // rampas: [x0, x1, z0, z1, altura, eixo, sentido]. Sentido -1: sobe indo para z menor.
-    rampas:[[-21,-18,15,24,Y,'z',-1],[18,21,15,24,Y,'z',-1],[2,5,-24,-15,Y,'z',1]],
+    rampas:[[-21,-18,15,24,Y,'z',-1],[18,21,15,24,Y,'z',-1],[2,5,-25,-16.5,Y,'z',1]],
     luzes:[[0,3.1,12.5],[0,3.1,-12.5],[-16.5,3.1,0],[16.5,3.1,0],[-10.5,3.1,20],[10.5,3.1,20],[-11.5,3.1,-20],[11.5,3.1,-20],[-2,6.7,-20],[-24,3.1,5],[24,3.1,-5],
       [0,6.7,20],[-23.5,6.7,-20],[23.5,6.7,-20],[-24,6.7,-5],[24,6.7,5]]};
 }
@@ -1499,7 +1501,7 @@ function ligarSom(){
     const n=AC.sampleRate*.6|0; ruido=AC.createBuffer(1,n,AC.sampleRate);
     const d=ruido.getChannelData(0); for(let i=0;i<n;i++)d[i]=rnd()*2-1;
   }catch(e){ AC=null; }
-  if(AC){ carregarVozes(); carregarMusica(); }
+  if(AC){ carregarVozes(); carregarMusica(); carregarArmas(); }
 }
 // vozes gravadas (sons.js): pacote CC0 "Zombies Sound Pack", de artisticdude, no OpenGameArt
 const vozes={dano:[],morte:[],gemido:[]};
@@ -1561,6 +1563,84 @@ function somMorte(z){
   somRuido(400,.25,.1*a);
 }
 
+// sons de arma gravados (sons-armas.js, todos CC0): tiros do "The Free Firearm Sound Library";
+// recargas de zer0_sol, SpringySpringo e BMacZero, do OpenGameArt. O arquivo chega depois do jogo abrir
+// (carrega sem travar a tela) e, enquanto não chega, o jogo usa os sons feitos no código.
+const somArma={}; let armasPedidas=false, somRec=[];
+function carregarArmas(){
+  const S=window.ZZ_ARMAS; if(!AC||!S||armasPedidas)return; armasPedidas=true;
+  for(const k in S){
+    try{
+      const bin=atob(S[k]), buf=new Uint8Array(bin.length);
+      for(let i=0;i<bin.length;i++)buf[i]=bin.charCodeAt(i);
+      const p=AC.decodeAudioData(buf.buffer,function(a){ somArma[k]=a; },function(){});
+      if(p&&p.catch)p.catch(function(){});
+    }catch(e){}
+  }
+}
+window.zzArmasChegou=carregarArmas;
+// toca um som gravado de arma; devolve a fonte, ou null se ele ainda não carregou
+function tocarArma(k,vol,atraso,veloc,abafar){
+  const b=somArma[k]; if(!AC||!b||vol<.004)return null;
+  const s=AC.createBufferSource(), g=AC.createGain();
+  s.buffer=b; s.playbackRate.value=veloc||1; g.gain.value=vol; s.connect(g);
+  // de longe o tiro chega mais abafado (sem os agudos)
+  if(abafar){ const f=AC.createBiquadFilter(); f.type='lowpass'; f.frequency.value=abafar; g.connect(f); f.connect(saida); }
+  else g.connect(saida);
+  s.start(AC.currentTime+(atraso||0));
+  return s;
+}
+// tiro: "perto" vai de 0 a 1 (1 é a sua própria arma)
+function somTiro(id,perto){
+  const a=ARMAS[id]||ARMAS.pistola;
+  if(tocarArma(id,(.35+a.som[2]*.6)*perto,0,.95+rnd()*.1,perto<.4?2600:0))return;
+  somRuido(a.som[0],a.som[1],a.som[2]*perto);
+}
+// cápsula caindo no chão e quicando uma vez: latão "tilinta"; o cartucho da escopeta é de plástico e faz um toque surdo
+function somCapsula(atraso,vol,plastico){
+  if(!AC||vol<.004)return;
+  const t0=AC.currentTime+atraso;
+  for(let q=0;q<2;q++){
+    const t=t0+q*(.08+rnd()*.06), v=vol*(q?.35:1), base=plastico?700+rnd()*200:3600+rnd()*900;
+    for(const k of plastico?[1,2.2]:[1,1.63,2.41]){
+      const o=AC.createOscillator(), g=AC.createGain(), dur=(plastico?.05:.14)/k;
+      o.type='sine'; o.frequency.value=base*k*(.97+rnd()*.06);
+      g.gain.setValueAtTime(.0001,t); g.gain.linearRampToValueAtTime(v/k,t+.002); g.gain.exponentialRampToValueAtTime(.0003,t+dur);
+      o.connect(g); g.connect(saida); o.start(t); o.stop(t+dur+.02);
+    }
+  }
+}
+// barulhos depois do tiro: bomba da escopeta, ferrolho do sniper, alavanca do rifle de caça e a cápsula no chão
+function somDepoisDoTiro(id,st){
+  const auto=ARMAS[id].cad<.12;
+  if(id==='escopeta'){ if(st.mag>0)tocarArma('bomba',.32,.3); somCapsula(.75,.05,true); return; }
+  if(id==='sniper'){ if(st.mag>0){ tocarArma('trilho',.3,.5,.85); tocarArma('trilho',.26,.85,1.05); } somCapsula(1.1,.04); return; }
+  if(id==='rifle'){ if(st.mag>0)tocarArma('bomba',.26,.35,.8); somCapsula(.8,.04); return; }
+  if(id==='dupla'||id==='revolver')return;   // essas guardam a cápsula até recarregar
+  if(!auto||rnd()<.3)somCapsula(.35+rnd()*.2,auto?.025:.04);
+}
+// recarga: cada tipo de arma tem seus barulhos, na hora certa dentro do tempo da recarga.
+// [som, quando (s), volume, velocidade]; "cartuchos" repete o som de pôr cartucho
+function somRecarga(id,falta){
+  pararSomRecarga();
+  const a=ARMAS[id], R=a.rec, l=[];
+  if(id==='pistola')l.push(['recPistola',0,.45,1.4]);
+  else if(id==='smg')l.push(['recPistola',.05,.45,1]);
+  else if(id==='ak'||id==='m4')l.push(['recRifle',.15,.45,1]);
+  else if(id==='m249'||id==='minigun')l.push(['recRifle',.35,.45,.85],['pente1',R*.65,.35,.9],['trilho',R-.55,.4,.9]);
+  else if(id==='escopeta'){ const n=Math.max(1,Math.min(4,falta)); for(let i=0;i<n;i++)l.push(['cartucho',.25+i*(1.35/n),.4,.95+rnd()*.1]); l.push(['bomba',R-.5,.35,1]); }
+  else if(id==='dupla')l.push(['pente2',.05,.35,.8],['cartucho',.6,.4,1],['cartucho',.95,.4,.95],['pente1',R-.4,.35,.8]);
+  else if(id==='revolver')l.push(['pente2',.05,.3,1.1],['cartucho',.45,.35,1.1],['cartucho',.7,.35,1.05],['cartucho',.95,.35,1.15],['pente1',R-.35,.3,1.2]);
+  else if(id==='sniper')l.push(['trilho',.1,.35,.85],['pente1',.8,.35,1],['pente2',1.35,.3,1],['trilho',R-.5,.35,1.05]);
+  else if(id==='rifle')l.push(['cartucho',.3,.38,1],['cartucho',.7,.38,.95],['cartucho',1.1,.38,1.05],['bomba',R-.55,.3,.8]);
+  let algum=false;
+  for(const p of l){ const s=tocarArma(p[0],p[2],p[1],p[3]); if(s){ somRec.push(s); algum=true; } }
+  if(id==='dupla'||id==='revolver'){ const n=id==='dupla'?2:3; for(let i=0;i<n;i++)somCapsula(.35+i*.07,.035); }   // cápsulas vazias caindo
+  return algum;
+}
+// trocar de arma no meio da recarga corta os barulhos que ainda iam tocar
+function pararSomRecarga(){ for(const s of somRec){ try{ s.stop(); }catch(e){} } somRec=[]; }
+
 /* ---------- zumbis ---------- */
 const matBrilho=(function(){
   const cv=document.createElement('canvas'); cv.width=64; cv.height=32; const g=cv.getContext('2d');
@@ -1592,37 +1672,40 @@ function sortearVariante(x,z){
 function criarZumbiMesh(t,vr){
   const V=vr?VARIANTES[vr]:null;
   const pele=mat(sorteia(t.peles)), roupa=mat(sorteia(V?V.roupas:t.roupas)), calca=mat(sorteia(V?V.calcas:t.calcas));
-  const g=new THREE.Group(), tronco=new THREE.Group(); tronco.position.y=.75;
+  // "YXZ": ao cair, o zumbi tomba para trás, para a frente ou de lado em relação a ele mesmo (não ao mapa)
+  const g=new THREE.Group(), tronco=new THREE.Group(); g.rotation.order='YXZ'; tronco.position.y=.75;
+  // a cabeça é um grupo à parte (centro em y = 1 do tronco): num tiro na cabeça que mata, ela sai voando
+  const cabeca=new THREE.Group(); cabeca.position.y=1; tronco.add(cabeca);
   tronco.add(caixa(.6,.75,.35,roupa,0,.375,0));
-  tronco.add(caixa(.5,.5,.5,pele,0,1,0));
-  tronco.add(caixa(.09,.07,.02,mOlho,-.12,1.05,.255,false),caixa(.09,.07,.02,mOlho,.12,1.05,.255,false));
-  tronco.add(caixa(.24,.07,.02,mBoca,0,.86,.255,false));
+  cabeca.add(caixa(.5,.5,.5,pele,0,0,0));
+  cabeca.add(caixa(.09,.07,.02,mOlho,-.12,.05,.255,false),caixa(.09,.07,.02,mOlho,.12,.05,.255,false));
+  cabeca.add(caixa(.24,.07,.02,mBoca,0,-.14,.255,false));
   tronco.add(caixa(.2+rnd()*.15,.2+rnd()*.2,.02,mFerida,(rnd()-.5)*.25,.3+rnd()*.25,.18,false));
-  if(vr==='professor')tronco.add(caixa(.52,.14,.52,mat(0x8a8a86),0,1.3,0));   // cabelo grisalho
-  else if(vr!=='policial'&&vr!=='militar'&&rnd()<.6)tronco.add(caixa(.52,.14,.52,mat(sorteia([0x1c1612,0x3a2a1a,0x55504a])),0,1.3,0));
+  if(vr==='professor')cabeca.add(caixa(.52,.14,.52,mat(0x8a8a86),0,.3,0));   // cabelo grisalho
+  else if(vr!=='policial'&&vr!=='militar'&&rnd()<.6)cabeca.add(caixa(.52,.14,.52,mat(sorteia([0x1c1612,0x3a2a1a,0x55504a])),0,.3,0));
   let capacete=null;
   const preto=mat(0x151515);
   if(vr==='professor'){
     tronco.add(caixa(.07,.42,.02,mat(sorteia([0xb8322a,0x2f4f8a,0x2e5d3f])),0,.5,.185,false));   // gravata
     // óculos: armação em volta dos dois olhos
-    tronco.add(caixa(.42,.025,.02,preto,0,1.1,.262,false),caixa(.42,.025,.02,preto,0,1.0,.262,false));
-    for(const x of [-.19,-.05,.05,.19])tronco.add(caixa(.025,.1,.02,preto,x,1.05,.262,false));
+    cabeca.add(caixa(.42,.025,.02,preto,0,.1,.262,false),caixa(.42,.025,.02,preto,0,0,.262,false));
+    for(const x of [-.19,-.05,.05,.19])cabeca.add(caixa(.025,.1,.02,preto,x,.05,.262,false));
   }else if(vr==='medico'){
     tronco.add(caixa(.62,.42,.37,roupa,0,-.17,0));                                                    // barra do jaleco
-    tronco.add(caixa(.3,.15,.02,mat(0x9ac8e0),0,.88,.262,false));                                     // máscara
+    cabeca.add(caixa(.3,.15,.02,mat(0x9ac8e0),0,-.12,.262,false));                                    // máscara
     for(let i=0;i<3;i++)tronco.add(caixa(.08+rnd()*.12,.08+rnd()*.14,.02,mFerida,(rnd()-.5)*.4,-.2+rnd()*.8,.19,false));   // sangue no jaleco
   }else if(vr==='policial'){
     tronco.add(caixa(.64,.45,.39,mat(0x1a1a1a),0,.45,0));                                              // colete
     tronco.add(caixa(.07,.08,.02,mat(0xd9b84a),-.15,.6,.2,false));                                     // distintivo
     tronco.add(caixa(.62,.08,.37,preto,0,.04,0));                                                      // cinto
-    tronco.add(caixa(.54,.12,.54,mat(0x1a2438),0,1.31,0),caixa(.5,.03,.2,mat(0x0e0e0e),0,1.26,.3));   // quepe com aba
+    cabeca.add(caixa(.54,.12,.54,mat(0x1a2438),0,.31,0),caixa(.5,.03,.2,mat(0x0e0e0e),0,.26,.3));     // quepe com aba
   }else if(vr==='militar'){
     for(let i=0;i<6;i++)tronco.add(caixa(.15+rnd()*.12,.12+rnd()*.12,.37,mat(sorteia([0x3a4428,0x6a6a42,0x2e3820])),(rnd()-.5)*.42,.08+rnd()*.6,0));   // camuflado
     tronco.add(caixa(.64,.38,.39,mat(0x3a4030),0,.45,0));                                              // colete tático
     tronco.add(caixa(.14,.12,.08,mat(0x2e3624),-.15,.4,.22),caixa(.14,.12,.08,mat(0x2e3624),.15,.4,.22));   // bolsos do colete
     capacete=new THREE.Group();
-    capacete.add(caixa(.58,.22,.58,mat(0x3f4a2c),0,1.34,0),caixa(.62,.06,.62,mat(0x34402a),0,1.24,0));
-    tronco.add(capacete);
+    capacete.add(caixa(.58,.22,.58,mat(0x3f4a2c),0,.34,0),caixa(.62,.06,.62,mat(0x34402a),0,.24,0));
+    cabeca.add(capacete);
   }
   const mangas=vr==='policial'||vr==='militar'||vr==='medico';   // fardas e jaleco têm manga comprida
   const be=new THREE.Group(), bd=new THREE.Group();
@@ -1636,8 +1719,8 @@ function criarZumbiMesh(t,vr){
   g.add(pe,pd,tronco);
   g.scale.setScalar(t.s);
   // brilho vermelho dos olhos, que aparece de noite e atravessa a neblina
-  const brilho=new THREE.Sprite(matBrilho); brilho.position.set(0,1.05,.3); brilho.scale.set(.6,.3,1); tronco.add(brilho);
-  return {g:g,tronco:tronco,pe:pe,pd:pd,be:be,bd:bd,brilho:brilho,capacete:capacete};
+  const brilho=new THREE.Sprite(matBrilho); brilho.position.set(0,.05,.3); brilho.scale.set(.6,.3,1); cabeca.add(brilho);
+  return {g:g,tronco:tronco,cabeca:cabeca,pe:pe,pd:pd,be:be,bd:bd,brilho:brilho,capacete:capacete};
 }
 let zumbis=[], corpos=[];
 // "tProprio" é usado pelo chefão, que tem tamanho e vida próprios a cada aparição
@@ -1650,9 +1733,9 @@ function nascerZumbi(tipo,tProprio,pos,forcaVar){
   if(!p)return null;
   const vr=forcaVar||((tipo==='normal'||tipo==='rapido')?sortearVariante(p[0],p[1]):null);
   const m=criarZumbiMesh(t,vr);
-  const z={tipo:tipo,t:t,g:m.g,tronco:m.tronco,pe:m.pe,pd:m.pd,be:m.be,bd:m.bd,brilho:m.brilho,x:p[0],z:p[1],y:0,andar:0,r:.42*t.s,
+  const z={tipo:tipo,t:t,g:m.g,tronco:m.tronco,cabeca:m.cabeca,pe:m.pe,pd:m.pd,be:m.be,bd:m.bd,brilho:m.brilho,x:p[0],z:p[1],y:0,andar:0,r:.42*t.s,
     hp:t.hp*(1+.07*(G.onda-1))*DIF[dif].hp*(vr?VARIANTES[vr].hp:1),dx:0,dz:0,atk:.4,fase:rnd()*6,nasce:1,tonto:0,
-    var:vr,capacete:m.capacete};
+    var:vr,capacete:m.capacete,kx:0,kz:0,giro:0};
   z.hpMax=z.hp;
   // cada zumbi tem um número; com amigos, o anfitrião avisa os outros que ele nasceu
   z.id=++G.zid; if(REDE.papel==='host')REDE.novosZ.push([z.id,tipo,vr||'',Math.round(t.s*100)/100]);
@@ -1805,15 +1888,31 @@ function rastro(ax,ay,az,bx,by,bz){
   const p=r.l.geometry.attributes.position.array; p[0]=ax;p[1]=ay;p[2]=az;p[3]=bx;p[4]=by;p[5]=bz;
   r.l.geometry.attributes.position.needsUpdate=true; r.vida=.07;
 }
+// manchas de sangue no chão: ficam 1 minuto e somem aos poucos nos últimos 5 segundos
 const manchas=[]; let manchaI=0;
+const VIDA_MANCHA=60, SOME_MANCHA=5;
 (function(){
-  const cg=new THREE.CircleGeometry(1,12), cm=new THREE.MeshLambertMaterial({color:0x4a0a0a,transparent:true,opacity:.8,depthWrite:false});
-  for(let i=0;i<36;i++){ const m=new THREE.Mesh(cg,cm); m.rotation.x=-Math.PI/2; m.visible=false; m.receiveShadow=true; m.position.y=.02+i*.0006; scene.add(m); manchas.push(m); }
+  const cg=new THREE.CircleGeometry(1,12);
+  for(let i=0;i<36;i++){
+    // cada mancha tem o próprio material para poder ir sumindo sozinha
+    const cm=new THREE.MeshLambertMaterial({color:0x4a0a0a,transparent:true,opacity:.8,depthWrite:false});
+    const m=new THREE.Mesh(cg,cm); m.rotation.x=-Math.PI/2; m.visible=false; m.receiveShadow=true; m.position.y=.02+i*.0006; m.userData.vida=0;
+    scene.add(m); manchas.push(m);
+  }
 })();
 function mancha(x,z,tam,y){
   const i=manchaI, m=manchas[i]; manchaI=(manchaI+1)%manchas.length;
   m.position.y=(y||0)+.06+i*.0006;   // acima da cerâmica (.02) e da quadra (.04) da escola
   m.position.x=x+(rnd()-.5)*.5; m.position.z=z+(rnd()-.5)*.5; m.scale.set(tam*(.7+rnd()*.6),tam*(.7+rnd()*.6),1); m.rotation.z=rnd()*6; m.visible=true;
+  m.userData.vida=VIDA_MANCHA; m.material.opacity=.8;
+}
+function atualizarManchas(dt){
+  for(const m of manchas){
+    if(!m.visible)continue;
+    m.userData.vida-=dt;
+    if(m.userData.vida<=0){ m.visible=false; continue; }
+    if(m.userData.vida<SOME_MANCHA)m.material.opacity=.8*m.userData.vida/SOME_MANCHA;
+  }
 }
 
 /* ---------- granadas ---------- */
@@ -1887,7 +1986,7 @@ function explodir(x,y,z){
     const dano=Math.round(900*(1-.6*Math.min(1,dz/RAIO_GRANADA)));
     if(dz>.01){ const emp=(1-dz/(RAIO_GRANADA+zb.r))*1.2/Math.max(1,s); zb.x+=(zb.x-x)/dz*emp; zb.z+=(zb.z-z)/dz*emp; }   // empurrão da explosão
     zb.tonto=.6;
-    ferirZumbi(zb,dano,zb.x,zb.y+s,zb.z,false);
+    ferirZumbi(zb,dano,zb.x,zb.y+s,zb.z,false,x,z,true);
   }
 }
 
@@ -2110,6 +2209,7 @@ function adicionarItem(id){
 function selecionar(i){
   P.sel=i; const s=P.slots[i];
   if(s&&s.t==='arma'){ P.arma=s.id; P.item=null; } else{ P.arma='maos'; P.item=s?s.id:null; }
+  if(P.rec>0)pararSomRecarga();
   P.rec=0; P.cd=Math.max(P.cd,.3); atualizarModelo(); slotsSujo=true;
 }
 function usarItem(i){
@@ -2254,7 +2354,7 @@ let slotsSujo=true, balX=0, balY=0;
 
 function limpar(){
   for(const g of granadas)scene.remove(g.m); granadas=[]; bolaFogo.visible=false; luzExplosao.intensity=0; tBola=0; G.tremor=0;
-  for(const z of zumbis)scene.remove(z.g); for(const c of corpos)scene.remove(c.g); for(const it of itens)scene.remove(it.g);
+  for(const z of zumbis)scene.remove(z.g); for(const c of corpos)tirarCorpo(c); for(const it of itens)scene.remove(it.g);
   zumbis=[]; corpos=[]; itens=[]; for(const s of SPOTS)s.livre=true;
   for(const p of parts){p.m.visible=false;p.vida=0;}
   for(const m of manchas)m.visible=false;
@@ -2419,7 +2519,8 @@ function proxima(d){
 function recarregar(){
   const a=ARMAS[P.arma], st=P.tem[P.arma];
   if(P.rec>0||st.mag>=a.mag||st.res<=0)return;
-  P.rec=a.rec; somTom(300,200,.08,.06,'square');
+  P.rec=a.rec;
+  if(!somRecarga(P.arma,Math.min(a.mag-st.mag,st.res)))somTom(300,200,.08,.06,'square');
 }
 function pular(){ const custo=P.infEst>0?0:8*DIF[dif].est; if(!P.noAr&&P.est>=custo){ P.vy=6.5; P.est-=custo; P.tEst=.7; } }
 const v3=new THREE.Vector3(), acertos=[];
@@ -2427,7 +2528,7 @@ let tClarao=0;
 function atirar(a,st){
   st.mag--; P.cd=a.cad; P.chute=1; P.pitch=clamp(P.pitch+a.chute,-1.5,1.5);
   P.corpo=P.yaw; P.tAlinha=1.2;   // ao atirar, o personagem vira na hora para onde a câmera aponta
-  somRuido(a.som[0],a.som[1],a.som[2]);
+  somTiro(P.arma,1); somDepoisDoTiro(P.arma,st);
   // na terceira pessoa a mira sai da câmera, mas o clarão, a cápsula e o rastro saem da arma do personagem,
   // e o tiro ignora o que estiver entre a câmera e o jogador (tMin)
   const tp=camDist>0, tMin=tp?camDist-.2:0;
@@ -2478,11 +2579,16 @@ function atirar(a,st){
   }
   slotsSujo=true;
 }
-function ferirZumbi(z,dano,x,y,zz,cab){
+// sx, sz: de onde veio o tiro (sem eles, do próprio jogador); expl: dano de explosão de granada
+function ferirZumbi(z,dano,x,y,zz,cab,sx,sz,expl){
+  if(sx===undefined||sz===undefined){ sx=P.x; sz=P.z; }
+  let ex=z.x-sx, ez=z.z-sz; const ed=Math.hypot(ex,ez)||1; ex/=ed; ez/=ed;   // direção do empurrão
+  const giro=(rnd()-.5)*Math.min(1,dano/40);
   // com amigos, quem não é o anfitrião só mostra o sangue e avisa o anfitrião, que tira a vida do zumbi
   if(REDE.papel==='cliente'){
     if(z.id)enviarHost({t:'acerto',id:z.id,d:Math.round(dano),c:cab?1:0});
     espirrar(x,y,zz,dano>60?6:3,cab&&z.capacete?mFaisca:mSangue); if(!(cab&&z.capacete))somDano(z);
+    z.giro=clamp((z.giro||0)+giro,-.7,.7);   // o tronco dá o tranco na hora; quem empurra de verdade é o anfitrião
     return;
   }
   if(z.hp<=0)return;
@@ -2490,18 +2596,132 @@ function ferirZumbi(z,dano,x,y,zz,cab){
   if(cab&&z.capacete){ z.capacete.visible=false; z.capacete=null; espirrar(x,y,zz,6,mFaisca); somTom(2200,1400,.1,.12,'triangle'); z.tonto=.15; return; }
   z.hp-=dano; espirrar(x,y,zz,dano>60?6:3,mSangue);
   z.tonto=z.tipo==='chefe'?.04:z.tipo==='tanque'?.07:.2;
+  // tranco: o tiro empurra o zumbi para longe de quem atirou e torce o tronco (tanque e chefão quase não saem do lugar)
+  const massa=z.tipo==='chefe'?8:z.tipo==='tanque'?3.5:1, forca=Math.min(7,dano/9)/massa;
+  z.kx+=ex*forca; z.kz+=ez*forca;
+  const kv=Math.hypot(z.kx,z.kz); if(kv>8){ z.kx*=8/kv; z.kz*=8/kv; }
+  z.giro=clamp(z.giro+giro,-.7,.7);
   if(z.hp<=0){
     const i=zumbis.indexOf(z); if(i>=0)zumbis.splice(i,1);
     if(z.brilho)z.brilho.visible=false;
+    // cada morte cai de um jeito; tiro na cabeça que mata arranca a cabeça
+    const semCab=!!cab, modo=modoQueda(z,dano,cab,expl,ex,ez);
+    corpos.push(novoCorpo(z,modo,semCab,ex,ez));
     // de noite vale até 50% a mais; os zumbis diferentes valem pontos extras
-    corpos.push({g:z.g,t:0}); G.mortes++; G.pontos+=Math.round((z.t.pts+(z.var?VARIANTES[z.var].pts:0))*(1+.5*(1-diaF))); somMorte(z); mancha(z.x,z.z,.9*z.t.s,z.y);
+    G.mortes++; G.pontos+=Math.round((z.t.pts+(z.var?VARIANTES[z.var].pts:0))*(1+.5*(1-diaF))); somMorte(z); mancha(z.x,z.z,.9*z.t.s,z.y);
     soltarItem(z);
-    if(REDE.papel==='host')REDE.mortosZ.push(z.id);
+    if(REDE.papel==='host'){ REDE.mortosZ.push(z.id); REDE.mortosInfo.push([z.id,modo,semCab?1:0,r2(ex),r2(ez)]); }
     if(z===G.chefe){ G.chefe=null; faixa('Chefão derrotado','+'+z.t.pts+' pontos'); }
   }else{
     somDano(z); if(rnd()<.25)mancha(z.x,z.z,.3*z.t.s,z.y);
   }
 }
+/* ---------- quedas dos zumbis ---------- */
+// jeitos de cair: 0 para trás, 1 de cara no chão, 2 e 3 de lado, 4 arremessado pela granada, 5 desaba de joelhos
+function modoQueda(z,dano,cab,expl,ex,ez){
+  let m;
+  if(expl)m=4;
+  else if(z.tipo==='chefe')m=0;
+  else if(dano>=120)m=0;                      // tiro forte (sniper, rifle, revólver na cabeça) joga para trás
+  else if(cab)m=rnd()<.55?5:0;                // sem cabeça: desaba ou cai para trás
+  else{ const r=rnd(); m=r<.35?0:r<.6?1:r<.73?2:r<.86?3:5; }
+  // "para trás" é para longe do tiro: se o tiro veio pelas costas, ele cai de cara
+  const ry=z.g.rotation.y, frente=Math.sin(ry)*ex+Math.cos(ry)*ez;
+  if(m===0&&frente>.3)m=1; else if(m===1&&frente<-.3&&!cab)m=0;
+  return m;
+}
+function novoCorpo(z,modo,semCab,ex,ez){
+  const s=z.t.s, c={g:z.g,t:0,modo:modo,x:z.x,z:z.z,y0:z.y,s:s,tronco:z.tronco,be:z.be,bd:z.bd,pe:z.pe,pd:z.pd,
+    rx:0,rz:0,alt:0,h:0,vy:0,vx:z.kx*.6,vz:z.kz*.6,dur:.55,afunda:0,jorro:0,voa:null,bateu:false,
+    b0:z.be.rotation.x,b1:z.bd.rotation.x,bAlvo:-1.6};
+  const tras=Math.sin(z.g.rotation.y)*ex+Math.cos(z.g.rotation.y)*ez<=0;
+  if(modo===0){ c.rx=-Math.PI/2; c.alt=.2; c.dur=.5; c.vx+=ex*1.5; c.vz+=ez*1.5; }
+  else if(modo===1){ c.rx=Math.PI/2; c.alt=.2; c.dur=.6; c.vx*=.4; c.vz*=.4; }
+  else if(modo===2||modo===3){ c.rz=(modo===2?1:-1)*Math.PI/2; c.alt=.32; c.bAlvo=-.4; }
+  else if(modo===4){ c.rx=(tras?-1:1)*Math.PI/2; c.alt=.2; c.dur=.8; c.vx=ex*6; c.vz=ez*6; c.vy=5+rnd()*2.5; }
+  else{ c.dur=.75; c.vx*=.2; c.vz*=.2; c.bAlvo=-.6; }
+  z.tronco.rotation.z=0;
+  if(semCab&&z.cabeca){ c.voa=voarCabeca(z,ex,ez); c.jorro=.9; }
+  return c;
+}
+// a cabeça sai do corpo (continua no mesmo lugar do mundo) e voa girando, quica e para no chão
+function voarCabeca(z,ex,ez){
+  const cab=z.cabeca; z.cabeca=null;
+  scene.attach(cab); cab.rotation.reorder('YXZ');
+  const f=3+rnd()*2.5;
+  espirrar(cab.position.x,cab.position.y,cab.position.z,8,mSangue);
+  somRuido(700,.18,.22*perto(z));
+  return {g:cab,vx:ex*f+(rnd()-.5)*1.5,vy:3+rnd()*2.5,vz:ez*f+(rnd()-.5)*1.5,
+    wx:(rnd()-.5)*16,wy:(rnd()-.5)*10,wz:(rnd()-.5)*16,chao:z.y+.25*z.t.s,parada:false};
+}
+const vPesc=new THREE.Vector3(), vQuadril=new THREE.Vector3();
+function atualizarCorpo(c,dt){
+  c.t+=dt;
+  // escorrega para onde o tiro empurrou (não atravessa parede)
+  if(c.vx||c.vz){
+    c.x+=c.vx*dt; c.z+=c.vz*dt;
+    const am=Math.exp(-dt*(c.modo===4&&c.h>0?1.2:5)); c.vx*=am; c.vz*=am;
+    if(Math.abs(c.vx)+Math.abs(c.vz)<.03)c.vx=c.vz=0;
+    empurrar(c,.3*c.s,c.y0);
+  }
+  // granada: o corpo sobe e cai
+  if(c.modo===4&&(c.h>0||c.vy>0)){ c.vy-=20*dt; c.h=Math.max(0,c.h+c.vy*dt); if(c.h===0)c.vy=0; }
+  const q=Math.min(1,c.t/c.dur), e=q*q;   // cai acelerando, como na gravidade
+  // no fim da queda o corpo dá um quiquezinho
+  const pos=c.t-c.dur, quique=pos>0&&pos<.5?.08*Math.sin(pos*22)*Math.exp(-pos*9):0;
+  let y=c.y0+c.h;
+  if(c.modo===5){
+    // dobra os joelhos (o corpo desce) e depois tomba o tronco para a frente
+    const a=Math.min(1,c.t/.3), b=clamp((c.t-.3)/.45,0,1);
+    c.pe.rotation.x=c.pd.rotation.x=1.2*a;
+    y-=.45*c.s*a;
+    c.tronco.rotation.x=.14+(1.26*b*b)-quique*1.5;
+  }else{
+    c.g.rotation.x=c.rx*(e-quique); c.g.rotation.z=c.rz*(e-quique);
+    y+=c.alt*c.s*e;   // deitado, o corpo fica em cima do chão e não enterrado pela metade
+  }
+  // braços vão soltos até a posição de deitado
+  const k=Math.min(1,c.t/c.dur);
+  c.be.rotation.x=c.b0+(c.bAlvo-c.b0)*k; c.bd.rotation.x=c.b1+(c.bAlvo-.25-c.b1)*k;
+  if(pos>=0&&!c.bateu){ c.bateu=true; somRuido(260,.16,.14*perto(c)); }
+  if(c.t>3)c.afunda+=dt*.5;
+  c.g.position.set(c.x,y-c.afunda,c.z);
+  // sangue saindo do pescoço
+  if(c.jorro>0){
+    c.jorro-=dt;
+    if(rnd()<.6){
+      c.tronco.localToWorld(vPesc.set(0,.8,0)); c.tronco.localToWorld(vQuadril.set(0,0,0));
+      vQuadril.subVectors(vPesc,vQuadril).normalize();
+      soltar(mSangue,vPesc.x,vPesc.y,vPesc.z,vQuadril.x*2.5+(rnd()-.5)*1.2,vQuadril.y*2.5+1+rnd(),vQuadril.z*2.5+(rnd()-.5)*1.2,.45+rnd()*.25);
+    }
+  }
+  const v=c.voa;
+  if(v){
+    const p=v.g.position;
+    if(!v.parada){
+      v.vy-=20*dt; p.x+=v.vx*dt; p.y+=v.vy*dt; p.z+=v.vz*dt;
+      v.g.rotation.x+=v.wx*dt; v.g.rotation.y+=v.wy*dt; v.g.rotation.z+=v.wz*dt;
+      empurrar(p,.2,v.chao-.25);
+      if(rnd()<.35)soltar(mSangue,p.x,p.y,p.z,(rnd()-.5)*1.5,rnd()*1.5,(rnd()-.5)*1.5,.4);
+      if(p.y<=v.chao){
+        p.y=v.chao;
+        if(v.vy<-2.5){
+          v.vy=-v.vy*.35; v.vx*=.55; v.vz*=.55; v.wx*=.5; v.wy*=.5; v.wz*=.5;
+          somRuido(500,.07,.08*perto(c)); mancha(p.x,p.z,.35,v.chao-.25*c.s);
+        }else{
+          v.parada=true;
+          // para deitada numa das faces, sem ficar enterrada pela quina
+          const r90=Math.PI/2; v.ax=Math.round(v.g.rotation.x/r90)*r90; v.az=Math.round(v.g.rotation.z/r90)*r90;
+        }
+      }
+    }else{
+      const a=Math.min(1,dt*12); v.g.rotation.x+=(v.ax-v.g.rotation.x)*a; v.g.rotation.z+=(v.az-v.g.rotation.z)*a;
+      if(c.t>3)p.y=v.chao-c.afunda;
+    }
+  }
+}
+function tirarCorpo(c){ scene.remove(c.g); if(c.voa)scene.remove(c.voa.g); }
+
 function ferirJogador(d){
   if(P.inv>0||P.caido)return;
   P.hp-=d; P.dor=.25; $('vinheta').style.opacity=.9; somTom(140,70,.2,.14,'sawtooth');
@@ -2567,7 +2787,7 @@ function atualizar(dt){
     if(atirando&&P.item&&P.cd<=0)usarItem(P.sel);
   }else if(P.rec>0){
     P.rec-=dt;
-    if(P.rec<=0){ const n=Math.min(a.mag-st.mag,st.res); st.mag+=n; st.res-=n; slotsSujo=true; somTom(240,360,.06,.06,'square'); }
+    if(P.rec<=0){ const n=Math.min(a.mag-st.mag,st.res); st.mag+=n; st.res-=n; slotsSujo=true; somRec=[]; if(!somArma.recPistola)somTom(240,360,.06,.06,'square'); }
   }else if(atirando&&P.cd<=0){
     if(st.mag>0)atirar(a,st);
     else if(st.res>0)recarregar();
@@ -2718,6 +2938,10 @@ function atualizar(dt){
     }
     z.tronco.rotation.x=z.tonto>0?-.4*Math.min(1,z.tonto/.12):.14;
     z.tronco.rotation.z=Math.sin(agora*z.t.vel*1.3+z.fase)*.07;
+    // tranco do tiro: o zumbi escorrega para trás e freia logo; o tronco volta da torcida aos poucos
+    if(z.kx||z.kz){ z.x+=z.kx*dt; z.z+=z.kz*dt; const am=Math.exp(-dt*9); z.kx*=am; z.kz*=am; if(Math.abs(z.kx)+Math.abs(z.kz)<.05)z.kx=z.kz=0; }
+    if(z.giro){ z.giro*=Math.exp(-dt*7); if(Math.abs(z.giro)<.01)z.giro=0; }
+    z.tronco.rotation.y=z.giro;
     for(let j=i+1;j<zumbis.length;j++){
       const o=zumbis[j], dx=o.x-z.x, dz=o.z-z.z, d2=dx*dx+dz*dz, m=z.r+o.r;
       if(d2<m*m&&d2>1e-6&&Math.abs(o.y-z.y)<1.5){ const d=Math.sqrt(d2), e=(m-d)/2/d; z.x-=dx*e; z.z-=dz*e; o.x+=dx*e; o.z+=dz*e; }
@@ -2728,13 +2952,12 @@ function atualizar(dt){
     z.g.rotation.y=Math.atan2(z.dx,z.dz);
   }
   for(let i=corpos.length-1;i>=0;i--){
-    const c=corpos[i]; c.t+=dt;
-    if(c.t<.4){ const q=c.t/.4; c.g.rotation.x=-q*q*Math.PI/2; }
-    else if(c.t>3)c.g.position.y-=dt*.5;
-    if(c.t>5){ scene.remove(c.g); corpos.splice(i,1); }
+    const c=corpos[i]; atualizarCorpo(c,dt);
+    if(c.t>5){ tirarCorpo(c); corpos.splice(i,1); }
   }
 
   atualizarGranadas(dt);
+  atualizarManchas(dt);
   // itens
   for(const it of itens){ if(it.espera>0)it.espera-=dt; it.cx.rotation.y+=dt*1.5; it.cx.position.y=.8+Math.sin(agora*2+it.x)*.12; }
   atualizarTesouros(dt);
@@ -3092,7 +3315,7 @@ $('bGraf').addEventListener('click',function(){
 // para os jogadores se acharem pelo código da sala. Itens são de cada um: cada jogador vê e pega os seus.
 const SITE_JOGO='https://jogozonaz.github.io/zona-z/';
 const REDE={papel:null,peer:null,codigo:'',meuId:'host',conns:{},host:null,jogadores:{},ordem:[],emJogo:false,espera:null,
-  difAntes:null,horaAntes:null,difHost:'medio',tick:0,tickZ:0,tickClima:0,tickEquipe:0,novosZ:[],mortosZ:[],
+  difAntes:null,horaAntes:null,difHost:'medio',tick:0,tickZ:0,tickClima:0,tickEquipe:0,novosZ:[],mortosZ:[],mortosInfo:[],
   campos:{},reviver:{},mapaZ:{},bonecos:{},filaHost:0,meuRv:0,pausaHost:0};
 const LETRAS_SALA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // sem 0, O, 1 e I, que se confundem
 function podeRede(){ return /github\.io$/.test(location.hostname)||location.hostname==='localhost'||location.hostname==='127.0.0.1'; }
@@ -3238,7 +3461,7 @@ function hostRecebe(id,m){
   else if(m.t==='acerto'){
     if(!REDE.emJogo)return;
     const z=zumbis.find(function(q){ return q.id===m.id; });
-    if(z)ferirZumbi(z,clamp(+m.d||0,0,900),z.x,z.y+1.2*z.t.s,z.z,!!m.c);
+    if(z)ferirZumbi(z,clamp(+m.d||0,0,900),z.x,z.y+1.2*z.t.s,z.z,!!m.c,j.x,j.z);   // o empurrão sai de onde o amigo está
   }
   else if(m.t==='tiro'){ if(!REDE.emJogo)return; m.de=id; transmitir(m,id); verTiro(m); }
   else if(m.t==='granada'){ if(!REDE.emJogo)return; transmitir(m,id); granadaRemota(m); }   // o anfitrião simula a granada do amigo e tira a vida dos zumbis
@@ -3331,7 +3554,7 @@ function comecarCoop(m){
   if(REDE.difAntes===null){ REDE.difAntes=dif; REDE.horaAntes=hora; }
   if(DIF[m.dif])dif=m.dif;
   if(m.hora==='sorteio'||m.hora==='dia'||m.hora==='noite')hora=m.hora;
-  REDE.emJogo=true; REDE.campos={}; REDE.reviver={}; REDE.novosZ=[]; REDE.mortosZ=[]; REDE.mapaZ={}; REDE.filaHost=0; REDE.meuRv=0; REDE.pausaHost=0;
+  REDE.emJogo=true; REDE.campos={}; REDE.reviver={}; REDE.novosZ=[]; REDE.mortosZ=[]; REDE.mortosInfo=[]; REDE.mapaZ={}; REDE.filaHost=0; REDE.meuRv=0; REDE.pausaHost=0;
   REDE.tick=0; REDE.tickZ=0; REDE.tickClima=5; REDE.tickEquipe=0;
   removerBonecos(); $('sala').hidden=true;
   comecar('ondas',false,clamp(m.mapa|0,0,MAPAS.length-1),REDE.papel==='cliente');
@@ -3404,6 +3627,8 @@ function fotoZumbis(){
   const m={t:'z',l:l};
   if(REDE.novosZ.length){ m.n=REDE.novosZ; REDE.novosZ=[]; }
   if(REDE.mortosZ.length){ m.d=REDE.mortosZ; REDE.mortosZ=[]; }
+  // como cada um morreu: [número, jeito de cair, sem cabeça, direção do empurrão x, z]
+  if(REDE.mortosInfo.length){ m.dm=REDE.mortosInfo; REDE.mortosInfo=[]; }
   return m;
 }
 // amigo: cria, move e mata as cópias dos zumbis do anfitrião
@@ -3412,8 +3637,8 @@ function criarEspelho(n){
   const tipo=ZT[n[1]]?n[1]:'normal', vr=VARIANTES[n[2]]?n[2]:null;
   const t=tipo==='chefe'?Object.assign({},ZT.chefe,{s:clamp(+n[3]||2.6,1,6)}):ZT[tipo];
   const mm=criarZumbiMesh(t,vr); mm.g.visible=false;
-  const z={id:id,tipo:tipo,t:t,g:mm.g,tronco:mm.tronco,pe:mm.pe,pd:mm.pd,be:mm.be,bd:mm.bd,brilho:mm.brilho,capacete:mm.capacete,var:vr,
-    x:0,y:0,z:0,tx:0,ty:0,tz:0,ry:0,try:0,r:.42*t.s,hp:100,hpMax:100,nasce:1,tonto:0,fase:rnd()*6,flags:0,novo:true};
+  const z={id:id,tipo:tipo,t:t,g:mm.g,tronco:mm.tronco,cabeca:mm.cabeca,pe:mm.pe,pd:mm.pd,be:mm.be,bd:mm.bd,brilho:mm.brilho,capacete:mm.capacete,var:vr,
+    x:0,y:0,z:0,tx:0,ty:0,tz:0,ry:0,try:0,r:.42*t.s,hp:100,hpMax:100,nasce:1,tonto:0,fase:rnd()*6,flags:0,novo:true,kx:0,kz:0,giro:0};
   scene.add(z.g); zumbis.push(z); REDE.mapaZ[id]=z;
   if(tipo==='chefe')G.chefe=z;
   if((vr==='policial'||vr==='militar')&&!G.vistos[vr]){
@@ -3429,11 +3654,18 @@ function espelharZumbis(m){
     if(z.novo){ z.novo=false; z.x=z.tx; z.y=z.ty; z.z=z.tz; z.ry=z.try; z.g.visible=true; }
     if(!(z.flags&2)&&z.capacete){ z.capacete.visible=false; z.capacete=null; somTom(2200,1400,.1,.12*perto(z),'triangle'); }
   }
+  const como={};
+  if(Array.isArray(m.dm))for(const e of m.dm)if(Array.isArray(e))como[e[0]]=e;
   for(const id of m.d||[]){
     const z=REDE.mapaZ[id]; if(!z)continue; delete REDE.mapaZ[id];
     const i=zumbis.indexOf(z); if(i>=0)zumbis.splice(i,1);
     if(z.brilho)z.brilho.visible=false;
-    z.g.visible=true; corpos.push({g:z.g,t:0}); somMorte(z); mancha(z.x,z.z,.9*z.t.s,z.y);
+    // cai do mesmo jeito que no jogo do anfitrião (se a informação não veio, cai para trás)
+    const e=como[id], modo=e&&e[1]>=0&&e[1]<=5?e[1]|0:0;
+    let ex=e?clamp(+e[3]||0,-1,1):0, ez=e?clamp(+e[4]||0,-1,1):0;
+    if(!ex&&!ez){ ex=-Math.sin(z.ry); ez=-Math.cos(z.ry); }
+    z.kx=z.kz=0;
+    z.g.visible=true; corpos.push(novoCorpo(z,modo,!!(e&&e[2]),ex,ez)); somMorte(z); mancha(z.x,z.z,.9*z.t.s,z.y);
     soltarItem(z);   // o que o zumbi deixa cai para cada jogador
     if(z===G.chefe){ G.chefe=null; faixa('Chefão derrotado',''); }
   }
@@ -3448,14 +3680,16 @@ function atualizarEspelho(dt,agora){
     if(z.flags&1)z.be.rotation.x=z.bd.rotation.x=-.6+Math.sin(agora*14+z.fase)*.5;
     else{ const bal=Math.sin(agora*z.t.vel*2.6+z.fase)*.6; z.pe.rotation.x=bal; z.pd.rotation.x=-bal; z.be.rotation.x=-.15+bal*.15; z.bd.rotation.x=-.05-bal*.2; }
     z.tronco.rotation.x=(z.flags&4)?-.4:.14; z.tronco.rotation.z=Math.sin(agora*z.t.vel*1.3+z.fase)*.07;
+    if(z.giro){ z.giro*=Math.exp(-dt*7); if(Math.abs(z.giro)<.01)z.giro=0; } z.tronco.rotation.y=z.giro;
     z.g.position.set(z.x,z.y-z.nasce*2*z.t.s,z.z); z.g.rotation.y=z.ry;
   }
 }
 function verTiro(m){
   const a=m.a, b=m.b; if(!Array.isArray(a)||!Array.isArray(b)||a.length<3||b.length<3)return;
   rastro(+a[0],+a[1],+a[2],+b[0],+b[1],+b[2]);
-  const arma=ARMAS[m.s]||ARMAS.pistola, d=Math.hypot(a[0]-P.x,a[2]-P.z);
-  somRuido(arma.som[0],arma.som[1],arma.som[2]*Math.max(.12,1/(1+d/10)));
+  const d=Math.hypot(a[0]-P.x,a[2]-P.z);
+  const id=typeof m.s==='string'&&Object.prototype.hasOwnProperty.call(ARMAS,m.s)&&m.s!=='maos'?m.s:'pistola';
+  somTiro(id,Math.max(.12,1/(1+d/10)));
 }
 
 // bonecos dos amigos, montados com o personagem que cada um escolheu e o apelido em cima
