@@ -150,6 +150,8 @@ a.btn{text-decoration:none;display:inline-block}
 #equipe i{display:block;width:70px;height:6px;background:rgba(0,0,0,.55);border:1px solid var(--line)}
 #equipe i b{display:block;height:100%;background:var(--rot)}
 #equipe .caido{color:var(--blood)}
+#equipe span{max-width:16ch;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#salaLista li{overflow-wrap:anywhere}
 #equipe em{font-style:normal;font-weight:400}
 #coopMsg{position:absolute;left:50%;top:62%;transform:translateX(-50%);padding:8px 14px;background:rgba(0,0,0,.65);border:1px solid var(--blood);font-weight:700;text-align:center;max-width:90%}
 #bCam{right:104px;top:162px;width:44px;height:44px;border-radius:6px;font-size:10px}
@@ -158,6 +160,7 @@ a.btn{text-decoration:none;display:inline-block}
 #ui.toque #bInv{top:124px}
 #bCura{right:208px;top:162px;width:44px;height:44px;border-radius:6px;font-size:10px}
 #ui.toque #bCura{top:124px}
+#bBomba{right:176px;bottom:150px;width:58px;height:58px;border-color:#9ab84a}
 
 /* inventário: 5 espaços da mão embaixo da tela; a mochila abre com I */
 #hotbar{position:absolute;left:50%;bottom:0;transform:translateX(-50%);display:flex;gap:6px;pointer-events:auto;z-index:2}
@@ -232,6 +235,7 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
     <div class="canto" id="cInfDir">
       <span id="armaNome">Pistola</span>
       <span id="municao">12 <small>/ ∞</small></span>
+      <span class="rot" id="bombas"></span>
       <div id="slots"></div>
     </div>
     <div id="mira"></div>
@@ -252,6 +256,7 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
       <button class="bt" id="bCam" data-act="cam" type="button">Câm</button>
       <button class="bt" id="bInv" data-act="inv" type="button">Inv</button>
       <button class="bt" id="bCura" data-act="curar" type="button">Cura</button>
+      <button class="bt" id="bBomba" data-act="bomba" type="button">Bomba</button>
     </div>
     <div id="hotbar"></div>
   </div>
@@ -273,7 +278,9 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
       <span class="sub" id="instalarDica"></span>
     </div>
     <div class="ajuda">
-      <p><b>Computador:</b> WASD anda, mouse mira, clique atira, botão direito usa a mira, R recarrega, os números ou a rodinha trocam de arma, Shift corre, Espaço pula, V troca entre primeira e terceira pessoa, M abre o mapa grande, Esc pausa.</p>
+      <p><b>Computador:</b> WASD anda, mouse mira, clique atira, botão direito usa a mira, R recarrega, os números ou a rodinha trocam de arma, Shift corre, Espaço pula, G joga granada, H usa cura, V troca entre primeira e terceira pessoa, M abre o mapa grande, Esc pausa.</p>
+      <p><b>Granadas:</b> você começa com 2 e acha mais pelo mapa e a cada onda. Ela quica, explode depois de quase 2 segundos e acaba com os zumbis em volta, sem machucar você nem os amigos. Boa para quando juntam muitos numa sala.</p>
+      <p><b>Entre as ondas:</b> no modo Ondas você tem 20 segundos de folga para juntar os itens antes de vir a próxima. Os itens novos aparecem logo que a onda acaba.</p>
       <p><b>Celular:</b> vire de lado. Dedo esquerdo anda (empurre até o fim para correr), dedo direito mira, botões à direita atiram e trocam de arma.</p>
       <p><b>Dificuldade:</b> no fácil vêm poucos zumbis, a estamina dura o dobro e a Fuga tem 7 minutos. No médio são 5 minutos. No difícil vêm muito mais zumbis, eles correm mais que você andando, aguentam mais tiro e batem mais forte, a Fuga tem 3 minutos e a gasolina fica o mais longe possível.</p>
       <p><b>Inventário:</b> os 5 espaços embaixo da tela são o que você leva na mão (teclas 1 a 5 ou a rodinha). A tecla I abre a mochila, com mais 20 espaços, e o jogo fica parado enquanto ela está aberta. Atadura, água, remédio e kit médico recuperam vida e dão estamina infinita por 30 segundos: segure o item e clique para usar, ou aperte H para usar o melhor da mochila.</p>
@@ -326,7 +333,7 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
   <div class="painel">
     <h2>Jogar com amigos</h2>
     <p class="sub" id="salaFora">O modo com amigos só funciona pelo endereço <b>jogozonaz.github.io/zona-z</b>. Abra o jogo por lá (ou pelo ícone instalado) para criar ou entrar numa sala.</p>
-    <div class="campo"><label for="tApelido"><span>Seu apelido</span></label><input id="tApelido" class="txt" maxlength="12" autocomplete="off" placeholder="Jogador"></div>
+    <div class="campo"><label for="tApelido"><span>Seu apelido</span></label><input id="tApelido" class="txt" maxlength="40" autocomplete="off" placeholder="Jogador"></div>
     <div id="salaEntrada" class="opBloco">
       <div class="acoes"><button class="btn" type="button" id="bCriarSala">Criar sala</button><span class="sub">Você vira o anfitrião e manda o convite.</span></div>
       <div class="acoes"><input id="tCodigo" class="txt codigo" maxlength="5" placeholder="CÓDIGO" autocomplete="off" aria-label="Código da sala"><button class="btn sec" type="button" id="bEntrarSala">Entrar na sala</button></div>
@@ -438,7 +445,9 @@ const ITENS={
   atadura:{nome:'Atadura',   vida:25,  cor:'#e9e4d4', max:9, desc:'Recupera 25 de vida.'},
   agua:   {nome:'Água',      vida:10,  cor:'#4cc9f0', max:9, desc:'Recupera 10 de vida.'},
   remedio:{nome:'Remédio',   vida:45,  cor:'#ff9a3c', max:9, desc:'Recupera 45 de vida.'},
-  kit:    {nome:'Kit médico',vida:100, cor:'#e2452f', max:5, desc:'Recupera toda a vida.'}
+  kit:    {nome:'Kit médico',vida:100, cor:'#e2452f', max:5, desc:'Recupera toda a vida.'},
+  // não cura: é jogada (ver lancarGranada)
+  granada:{nome:'Granada',   vida:0,   cor:'#9ab84a', max:5, granada:true, desc:'Jogue com a tecla G (ou segure na mão e clique): explode os zumbis em volta e não machuca você nem os amigos.'}
 };
 const ITENS_SORTEIO=['atadura','atadura','atadura','atadura','agua','agua','agua','remedio','remedio','kit'];
 const ORDEM=['pistola','revolver','smg','ak','m4','escopeta','dupla','rifle','sniper','m249','minigun'];
@@ -450,7 +459,7 @@ const ZT={
   // chefão: aparece a cada 5 ondas; tamanho, vida, dano e velocidade crescem a cada chefão (ver o trecho das ondas)
   chefe: {s:2.6, hp:2600,vel:2.3, dano:38, pts:500,voz:.42,  peles:[0x3f5f34,0x4a5a2e],          roupas:[0x3a1f1f,0x2a2a2a,0x3b2b1b],                                     calcas:[0x1f1f1f,0x2a2218]}
 };
-const CURTO={pistola:'Pistola',revolver:'Revólver',smg:'Uzi',ak:'AK-47',m4:'M4',escopeta:'Escopeta',dupla:'Dupla',rifle:'Rifle',sniper:'Sniper',m249:'M249',minigun:'Minigun',atadura:'Atadura',agua:'Água',remedio:'Remédio',kit:'Kit'};
+const CURTO={pistola:'Pistola',revolver:'Revólver',smg:'Uzi',ak:'AK-47',m4:'M4',escopeta:'Escopeta',dupla:'Dupla',rifle:'Rifle',sniper:'Sniper',m249:'M249',minigun:'Minigun',atadura:'Atadura',agua:'Água',remedio:'Remédio',kit:'Kit',granada:'Granada'};
 const MODOS={ondas:'Ondas', torre:'Defenda a torre', fuga:'Fuga', mundo:'Mundo aberto'};
 
 /*MAPAS-INI*/
@@ -1692,7 +1701,7 @@ function tipoPorNivel(n){
 }
 function itemMundo(){
   const r=rnd();
-  if(r<.4)criarItem('arma',sorteia(ARMAS_MUNDO)); else if(r<.75)criarItem('municao'); else criarItem('cura');
+  if(r<.4)criarItem('arma',sorteia(ARMAS_MUNDO)); else if(r<.72)criarItem('municao'); else if(r<.92)criarItem('cura'); else criarItem('item','granada');
 }
 function atualizarMundo(dt){
   G.tempo+=dt;
@@ -1807,6 +1816,81 @@ function mancha(x,z,tam,y){
   m.position.x=x+(rnd()-.5)*.5; m.position.z=z+(rnd()-.5)*.5; m.scale.set(tam*(.7+rnd()*.6),tam*(.7+rnd()*.6),1); m.rotation.z=rnd()*6; m.visible=true;
 }
 
+/* ---------- granadas ---------- */
+// Explodem os zumbis num raio de 5,5 m e não machucam nenhum jogador.
+// Com amigos: quem joga avisa os outros; todos veem a granada voar e explodir, mas só o anfitrião tira a vida dos zumbis.
+const RAIO_GRANADA=5.5, ESPOLETA=1.8;
+let granadas=[], tBola=0;
+const mFogo=new THREE.MeshBasicMaterial({color:0xffb347}), mFumaca=new THREE.MeshBasicMaterial({color:0x4a4a48});
+const bolaFogo=new THREE.Mesh(new THREE.SphereGeometry(1,14,10),new THREE.MeshBasicMaterial({color:0xffa030,transparent:true,opacity:0,depthWrite:false}));
+bolaFogo.visible=false; scene.add(bolaFogo);
+const luzExplosao=new THREE.PointLight(0xffa040,0,22,1.6); scene.add(luzExplosao);   // criada uma vez só: trocar o número de luzes faz o jogo engasgar
+function soltarGranada(px,py,pz,vx,vy,vz){
+  const m=fazerItem('granada'); m.scale.setScalar(1.8); m.position.set(px,py,pz); scene.add(m);
+  granadas.push({x:px,y:py,z:pz,vx:vx,vy:vy,vz:vz,t:ESPOLETA,m:m});
+}
+// joga para onde a câmera aponta, um pouco para cima, saindo da mão do jogador
+function lancarGranada(){
+  v3.set(0,0,-1).applyQuaternion(camera.quaternion);
+  const fx=-Math.sin(P.yaw), fz=-Math.cos(P.yaw);
+  const px=P.x+fx*.5, py=P.y+1.45, pz=P.z+fz*.5, vx=v3.x*13, vy=v3.y*13+3.5, vz=v3.z*13;
+  soltarGranada(px,py,pz,vx,vy,vz);
+  somRuido(1400,.18,.1);
+  if(REDE.emJogo){ const m={t:'granada',p:[r2(px),r2(py),r2(pz)],v:[r2(vx),r2(vy),r2(vz)]}; if(REDE.papel==='host')transmitir(m); else enviarHost(m); }
+}
+function granadaRemota(m){
+  const p=m.p, v=m.v; if(!Array.isArray(p)||!Array.isArray(v)||p.length<3||v.length<3)return;
+  soltarGranada(+p[0]||0,+p[1]||0,+p[2]||0,+v[0]||0,+v[1]||0,+v[2]||0);
+}
+function dentroDeObstaculo(x,y,z){
+  for(const o of obst)if(x>o.x0&&x<o.x1&&z>o.z0&&z<o.z1&&y>o.y0&&y<o.h)return true;
+  for(const o of soRaio)if(x>o.x0&&x<o.x1&&z>o.z0&&z<o.z1&&y>o.y0&&y<o.h)return true;
+  return false;
+}
+function atualizarGranadas(dt){
+  for(let i=granadas.length-1;i>=0;i--){
+    const g=granadas[i];
+    g.vy-=20*dt;
+    // anda um eixo de cada vez: se entrar numa parede, móvel ou teto, volta e quica
+    let nx=g.x+g.vx*dt; if(Math.abs(nx)>HALF-.3||dentroDeObstaculo(nx,g.y,g.z)){ g.vx*=-.4; nx=g.x; }
+    let nz=g.z+g.vz*dt; if(Math.abs(nz)>HALF-.3||dentroDeObstaculo(nx,g.y,nz)){ g.vz*=-.4; nz=g.z; }
+    let ny=g.y+g.vy*dt; if(dentroDeObstaculo(nx,ny,nz)){ g.vy*=-.3; ny=g.y; }
+    const chao=chaoEm(nx,nz,g.y);
+    if(ny<chao+.08){
+      ny=chao+.08;
+      if(g.vy<0){ if(g.vy<-3)somRuido(900,.05,.06*perto(g)); g.vy=-g.vy*.35; if(g.vy<1)g.vy=0; g.vx*=.6; g.vz*=.6; }
+    }
+    g.x=nx; g.y=ny; g.z=nz;
+    g.m.position.set(g.x,g.y,g.z); g.m.rotation.x+=dt*8; g.m.rotation.z+=dt*5;
+    g.t-=dt;
+    if(g.t<=0){ scene.remove(g.m); granadas.splice(i,1); explodir(g.x,g.y,g.z); }
+  }
+  if(tBola>0){
+    tBola-=dt; const q=1-Math.max(0,tBola)/.45;
+    bolaFogo.scale.setScalar(.6+q*RAIO_GRANADA*.8); bolaFogo.material.opacity=.85*(1-q); luzExplosao.intensity=4*(1-q);
+    if(tBola<=0){ bolaFogo.visible=false; luzExplosao.intensity=0; }
+  }
+  if(G.tremor>0)G.tremor=Math.max(0,G.tremor-dt);
+}
+function explodir(x,y,z){
+  bolaFogo.position.set(x,y+.3,z); bolaFogo.visible=true; tBola=.45; luzExplosao.position.set(x,y+1,z); luzExplosao.intensity=4;
+  for(let i=0;i<22;i++)soltar(rnd()<.6?mFogo:mFaisca,x,y+.3,z,(rnd()-.5)*14,2+rnd()*7,(rnd()-.5)*14,.4+rnd()*.5,.1+rnd()*.12);
+  for(let i=0;i<10;i++)soltar(mFumaca,x+(rnd()-.5),y+.5,z+(rnd()-.5),(rnd()-.5)*3,4+rnd()*3,(rnd()-.5)*3,.8+rnd()*.5,.25+rnd()*.2);
+  const d=Math.hypot(x-P.x,z-P.z), a=Math.max(.15,1/(1+d/8));
+  somRuido(300,1.1,.9*a); somTom(110,30,.9,.35*a,'sawtooth');
+  if(d<16)G.tremor=Math.max(G.tremor||0,.45*(1-d/16));   // tela treme quando explode perto
+  // o dano nos zumbis é feito por quem joga sozinho ou pelo anfitrião
+  if(REDE.papel==='cliente')return;
+  for(const zb of zumbis.slice()){
+    const s=zb.t.s, dz=Math.hypot(zb.x-x,zb.z-z), dy=Math.abs((zb.y+s)-(y+.5));
+    if(dz>RAIO_GRANADA+zb.r||dy>3)continue;   // andar diferente não pega
+    const dano=Math.round(900*(1-.6*Math.min(1,dz/RAIO_GRANADA)));
+    if(dz>.01){ const emp=(1-dz/(RAIO_GRANADA+zb.r))*1.2/Math.max(1,s); zb.x+=(zb.x-x)/dz*emp; zb.z+=(zb.z-z)/dz*emp; }   // empurrão da explosão
+    zb.tonto=.6;
+    ferirZumbi(zb,dano,zb.x,zb.y+s,zb.z,false);
+  }
+}
+
 /* ---------- arma na mão ---------- */
 const vm=new THREE.Group(); vm.position.set(.3,-.28,-.6); vm.visible=false; camera.add(vm);
 function criarArmas(pai){
@@ -1860,6 +1944,11 @@ function fazerItem(id){
   if(id==='atadura')g.add(caixa(.13,.1,.1,branco,0,0,0,N),caixa(.135,.03,.105,mat(0xc23b2e),0,0,0,N));
   else if(id==='remedio')g.add(caixa(.07,.11,.07,mat(0xe08a2a),0,0,0,N),caixa(.076,.035,.076,branco,0,.07,0,N),caixa(.073,.04,.073,branco,0,-.01,0,N));
   else if(id==='kit')g.add(caixa(.2,.14,.08,mat(0xc22a22),0,0,0,N),caixa(.09,.03,.085,branco,0,0,0,N),caixa(.03,.09,.085,branco,0,0,0,N),caixa(.06,.02,.04,mat(0x2a2f33),0,.08,0,N));
+  else if(id==='granada'){
+    const verde=mat(0x5a6b2e), escuro=mat(0x3a4520), metal=mat(0xa0a6ac);
+    g.add(caixa(.09,.11,.09,verde,0,0,0,N),caixa(.095,.02,.095,escuro,0,.022,0,N),caixa(.095,.02,.095,escuro,0,-.026,0,N),
+      caixa(.05,.04,.05,metal,0,.075,0,N),caixa(.015,.09,.025,metal,.05,.03,0,N),caixa(.03,.03,.006,metal,-.035,.097,0,N));
+  }
   else g.add(caixa(.07,.17,.07,mat(0x3aa0e0),0,0,0,N),caixa(.04,.04,.04,branco,0,.105,0,N),caixa(.073,.05,.073,branco,0,.01,0,N));
   return g;
 }
@@ -1949,7 +2038,7 @@ function etiqueta(txt,cor){
   const cv=document.createElement('canvas'); cv.width=256; cv.height=64; const g=cv.getContext('2d');
   g.fillStyle='rgba(8,13,16,.8)'; g.fillRect(0,0,256,64);
   g.strokeStyle=cor; g.lineWidth=4; g.strokeRect(2,2,252,60);
-  g.fillStyle=cor; g.font='bold 34px sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(txt,128,34);
+  g.fillStyle=cor; g.font='bold 34px sans-serif'; g.textAlign='center'; g.textBaseline='middle'; g.fillText(txt,128,34,240);   // texto comprido é espremido para caber
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv)}));
   s.scale.set(2,.5,1); s.position.y=1.7; return s;
 }
@@ -2026,6 +2115,14 @@ function selecionar(i){
 function usarItem(i){
   const s=P.slots[i]; if(!s||s.t!=='item')return false;
   const d=ITENS[s.id];
+  if(d.granada){
+    if(P.caido||P.cdBomba>0)return false;
+    lancarGranada(); P.cdBomba=.7; P.cd=.5; P.chute=.6; P.tAlinha=1.2;
+    s.n--; if(s.n<=0)P.slots[i]=null;
+    if(i===P.sel)selecionar(P.sel);
+    slotsSujo=true;
+    return true;
+  }
   P.hp=Math.min(100,P.hp+d.vida); P.est=100; P.cansado=false; P.infEst=30; P.cd=.8; P.chute=.6; P.tAlinha=1.2;
   s.n--; if(s.n<=0)P.slots[i]=null;
   if(i===P.sel)selecionar(P.sel);
@@ -2037,12 +2134,17 @@ function curaRapida(){
   // usa o menor item que cobre a vida que falta; se nenhum cobre, o mais forte que tiver
   const falta=100-P.hp; let melhor=-1, mv=0;
   for(let i=0;i<25;i++){
-    const s=P.slots[i]; if(!s||s.t!=='item')continue;
+    const s=P.slots[i]; if(!s||s.t!=='item'||ITENS[s.id].granada)continue;
     const v=ITENS[s.id].vida;
     if(melhor<0||(mv<falta?v>mv:(v>=falta&&v<mv))){ melhor=i; mv=v; }
   }
   if(melhor<0){ avisar('Você não tem itens de cura'); return; }
   usarItem(melhor);
+}
+// tecla G / botão Bomba: joga a primeira granada que tiver (primeiro as da mão, depois as da mochila)
+function granadaDoInventario(){
+  for(let i=0;i<25;i++){ const s=P.slots[i]; if(s&&s.t==='item'&&ITENS[s.id].granada){ usarItem(i); return; } }
+  avisar('Você não tem granadas');
 }
 function largar(i){
   const s=P.slots[i]; if(!s)return;
@@ -2074,6 +2176,11 @@ function icone(s){
   }else if(s.id==='atadura'){ g.fillStyle='#f2efe6'; g.fillRect(8,14,32,20); g.fillStyle='#c23b2e'; g.fillRect(8,21,32,6); g.strokeStyle='#8a8578'; g.strokeRect(8.5,14.5,31,19); }
   else if(s.id==='remedio'){ g.fillStyle='#f2efe6'; g.fillRect(16,6,16,8); g.fillStyle='#e08a2a'; g.fillRect(13,14,22,28); g.fillStyle='#f2efe6'; g.fillRect(13,22,22,10); }
   else if(s.id==='kit'){ g.fillStyle='#2a2f33'; g.fillRect(18,6,12,6); g.fillStyle='#c22a22'; g.fillRect(6,12,36,28); g.fillStyle='#f2efe6'; g.fillRect(20,16,8,20); g.fillRect(14,22,20,8); }
+  else if(s.id==='granada'){
+    g.fillStyle='#5a6b2e'; g.fillRect(14,15,20,27); g.fillStyle='#3a4520'; g.fillRect(14,22,20,3); g.fillRect(14,32,20,3);
+    g.fillStyle='#a0a6ac'; g.fillRect(19,9,10,7); g.fillRect(30,11,4,20);
+    g.strokeStyle='#a0a6ac'; g.lineWidth=2; g.beginPath(); g.arc(14,10,4,0,6.3); g.stroke();
+  }
   else{ g.fillStyle='#f2efe6'; g.fillRect(20,4,8,7); g.fillStyle='#3aa0e0'; g.fillRect(15,11,18,33); g.fillStyle='#f2efe6'; g.fillRect(15,22,18,9); }
   return iconeCache[k]=cv.toDataURL();
 }
@@ -2099,7 +2206,7 @@ function desenharInv(){
   $('invMao').innerHTML=a; $('invBolsa').innerHTML=b;
   const s=invSel>=0?P.slots[invSel]:null; let txt='Clique num item e depois em outro espaço para mover ou trocar de lugar.';
   if(s&&s.t==='arma'){ const m=P.tem[s.id]; txt=ARMAS[s.id].nome+': '+m.mag+' no pente, '+(m.res===Infinity?'munição infinita':m.res+' de reserva')+'. Clique em outro espaço para mover.'; }
-  else if(s)txt=ITENS[s.id].nome+' ×'+s.n+'. '+ITENS[s.id].desc+' Dá estamina infinita por 30 segundos.';
+  else if(s)txt=ITENS[s.id].nome+' ×'+s.n+'. '+ITENS[s.id].desc+(ITENS[s.id].granada?'':' Dá estamina infinita por 30 segundos.');
   $('invInfo').textContent=txt;
   $('bUsar').disabled=!(s&&s.t==='item'); $('bLargar').disabled=!s;
 }
@@ -2146,6 +2253,7 @@ let joyId=null, joyX=0, joyY=0, joyOX=0, joyOY=0, olharId=null, olharX=0, olharY
 let slotsSujo=true, balX=0, balY=0;
 
 function limpar(){
+  for(const g of granadas)scene.remove(g.m); granadas=[]; bolaFogo.visible=false; luzExplosao.intensity=0; tBola=0; G.tremor=0;
   for(const z of zumbis)scene.remove(z.g); for(const c of corpos)scene.remove(c.g); for(const it of itens)scene.remove(it.g);
   zumbis=[]; corpos=[]; itens=[]; for(const s of SPOTS)s.livre=true;
   for(const p of parts){p.m.visible=false;p.vida=0;}
@@ -2166,7 +2274,7 @@ function comecar(modo,mesmoMapa,mapaForcado,semTravar){
   if(modo==='torre')fluxo(fTorre,sementesTorre());
   P.x=0; P.z=7; P.y=0; P.vy=0; P.yaw=0; P.pitch=0; P.hp=100; P.vidas=aberto()?1:3; P.inv=0; P.cd=0; P.rec=0; P.chute=0; P.est=100; P.tEst=0; P.cansado=false;
   P.tem={pistola:{mag:12,res:Infinity},maos:{mag:0,res:0}}; P.slots=new Array(25).fill(null); P.slots[0]={t:'arma',id:'pistola'};
-  P.infEst=0; G.cheioT=0; G.chefe=null; G.vistos={}; cache.chefeOn=false; P.noAr=false; P.tAlinha=0; selecionar(0); P.cd=0; adicionarItem('atadura'); atirando=false; mirando=false; $('inv').hidden=true;
+  P.infEst=0; G.cheioT=0; G.chefe=null; G.vistos={}; cache.chefeOn=false; P.noAr=false; P.tAlinha=0; selecionar(0); P.cd=0; P.cdBomba=0; adicionarItem('atadura'); adicionarItem('granada'); adicionarItem('granada'); cache.objOn=false; atirando=false; mirando=false; $('inv').hidden=true;
   G.gal=0; G.saida=null; G.avisoHeli=0; G.limite=DIF[dif].tempo;
   if(modo==='fuga'){
     // começa num canto do mundo, o helicóptero fica no canto oposto e os galões em três regiões do caminho
@@ -2210,9 +2318,10 @@ function montarOnda(n){
   if(n%5===0){ q.length=Math.ceil(q.length/2); q.push('chefe'); }
   return q;
 }
+const INTERVALO_ONDA=20;   // segundos de folga entre uma onda e outra
 function iniciarOnda(n){
   G.onda=n; G.fila=montarOnda(n); G.spawnT=.5;
-  avisoOnda(n,G.fila.length); itensDaOnda(n);
+  avisoOnda(n,G.fila.length); if(n===1)itensDaOnda(1);   // das outras ondas, os itens já saíram no intervalo
   if(REDE.papel==='host')transmitir({t:'onda',n:n,q:G.fila.length});
 }
 function avisoOnda(n,q){
@@ -2225,6 +2334,7 @@ function itensDaOnda(n){
     const pesadas=n>=3?['ak','escopeta','sniper','minigun','sniper']:['ak','escopeta'];
     criarItem('arma',sorteia(pesadas));
     criarItem('municao'); criarItem('municao');
+    criarItem('item','granada');
   }
   criarItem('cura');
 }
@@ -2451,7 +2561,7 @@ function atualizar(dt){
   }
 
   // arma
-  P.cd-=dt;
+  P.cd-=dt; if(P.cdBomba>0)P.cdBomba-=dt;
   if(P.arma==='maos'){
     // com um item de cura na mão, o botão de tiro usa o item
     if(atirando&&P.item&&P.cd<=0)usarItem(P.sel);
@@ -2523,6 +2633,7 @@ function atualizar(dt){
   // com a câmera colada no personagem (num canto apertado), ele some para a tela não mostrar o lado de dentro do boneco
   pj.visible=tp&&camDist>.8; vm.visible=!tp&&!naLuneta;
   camera.rotation.set(P.pitch,P.yaw,0);
+  if(G.tremor>0){ camera.rotation.x+=(rnd()-.5)*G.tremor*.12; camera.rotation.y+=(rnd()-.5)*G.tremor*.12; }   // explosão perto
 
   // ondas
   if(aberto()){ atualizarMundo(dt); if(G.estado!=='jogando')return; }
@@ -2541,10 +2652,13 @@ function atualizar(dt){
       G.spawnT=Math.max(.25,.8-G.onda*.03)*(G.cem?.5:1)/dz/(1+.4*fn);
     }
     if(!G.fila.length&&!zumbis.length){
-      const bonus=50*G.onda; G.pontos+=bonus; G.pausaOnda=6;
+      // intervalo de 20 s para juntar os itens; os itens da próxima onda já aparecem agora
+      const bonus=50*G.onda; G.pontos+=bonus; G.pausaOnda=INTERVALO_ONDA;
+      itensDaOnda(G.onda+1);
       if(G.modo==='torre')G.torreHp=Math.min(1000,G.torreHp+100);
-      faixa('Onda '+G.onda+' concluída','+'+bonus+' pontos'); somTom(440,880,.3,.1,'triangle');
-      if(REDE.papel==='host')transmitir({t:'aviso',a:'Onda '+G.onda+' concluída',b:'+'+bonus+' pontos'});
+      const sub='+'+bonus+' pontos · próxima onda em '+INTERVALO_ONDA+' s: junte os itens';
+      faixa('Onda '+G.onda+' concluída',sub); somTom(440,880,.3,.1,'triangle');
+      if(REDE.papel==='host')transmitir({t:'intervalo',n:G.onda+1,s:INTERVALO_ONDA,a:'Onda '+G.onda+' concluída',b:sub});
     }
   }
 
@@ -2620,6 +2734,7 @@ function atualizar(dt){
     if(c.t>5){ scene.remove(c.g); corpos.splice(i,1); }
   }
 
+  atualizarGranadas(dt);
   // itens
   for(const it of itens){ if(it.espera>0)it.espera-=dt; it.cx.rotation.y+=dt*1.5; it.cx.position.y=.8+Math.sin(agora*2+it.x)*.12; }
   atualizarTesouros(dt);
@@ -2652,6 +2767,15 @@ function hud(dt){
   const inf=P.infEst>0;
   if(cache.inf!==inf){ cache.inf=inf; $('estBarra').classList.toggle('inf',inf); }
   por('estRot',inf?'Estamina infinita · '+Math.ceil(P.infEst)+' s':'Estamina');
+  // granadas que tem no inventário
+  let nb=0; for(const s of P.slots)if(s&&s.t==='item'&&s.id==='granada')nb+=s.n;
+  por('bombas',nb?'Granadas: '+nb+(toqueModo?' · botão Bomba':' · tecla G'):'');
+  // intervalo entre as ondas: contagem para a próxima
+  if(G.modo==='ondas'){
+    const resta=REDE.papel==='cliente'?REDE.pausaHost:(G.onda>=1?G.pausaOnda:0), mostra=resta>0;
+    if(cache.objOn!==mostra){ cache.objOn=mostra; $('objetivo').hidden=!mostra; }
+    if(mostra)por('objetivo','Próxima onda em '+Math.ceil(resta)+' s · junte armas, munição e cura');
+  }
   por('vidas','♥'.repeat(Math.max(0,P.vidas)));
   const hp=Math.max(0,Math.round(P.hp));
   if(cache.hp!==hp){ cache.hp=hp; const b=$('vidaBarra'); b.style.width=hp+'%'; b.style.background=hp>50?'var(--rot)':hp>25?'var(--hazard)':'var(--blood)'; }
@@ -2746,6 +2870,7 @@ window.addEventListener('keydown',function(e){
   else if(e.code==='KeyM'){ if(!e.repeat)alternarMapa(); }
   else if(e.code==='KeyV'){ if(!e.repeat)trocarCamera(); }
   else if(e.code==='KeyH'){ if(!e.repeat)curaRapida(); }
+  else if(e.code==='KeyG'){ if(!e.repeat)granadaDoInventario(); }
   else if(e.code.indexOf('Digit')===0){ const i=+e.code.slice(5)-1; if(i>=0&&i<5&&i!==P.sel)selecionar(i); }
 });
 window.addEventListener('keyup',function(e){ teclas[e.code]=false; });
@@ -2788,6 +2913,7 @@ toque.addEventListener('touchstart',function(e){
       else if(act==='cam')trocarCamera();
       else if(act==='inv')abrirInv();
       else if(act==='curar')curaRapida();
+      else if(act==='bomba')granadaDoInventario();
       continue;
     }
     if(t.clientX<window.innerWidth*.45&&joyId===null){
@@ -2967,14 +3093,15 @@ $('bGraf').addEventListener('click',function(){
 const SITE_JOGO='https://jogozonaz.github.io/zona-z/';
 const REDE={papel:null,peer:null,codigo:'',meuId:'host',conns:{},host:null,jogadores:{},ordem:[],emJogo:false,espera:null,
   difAntes:null,horaAntes:null,difHost:'medio',tick:0,tickZ:0,tickClima:0,tickEquipe:0,novosZ:[],mortosZ:[],
-  campos:{},reviver:{},mapaZ:{},bonecos:{},filaHost:0,meuRv:0};
+  campos:{},reviver:{},mapaZ:{},bonecos:{},filaHost:0,meuRv:0,pausaHost:0};
 const LETRAS_SALA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // sem 0, O, 1 e I, que se confundem
 function podeRede(){ return /github\.io$/.test(location.hostname)||location.hostname==='localhost'||location.hostname==='127.0.0.1'; }
 function r2(v){ return Math.round(v*100)/100; }
 function idSala(c){ return 'zona-z-sala-'+c; }
 function novoCodigo(){ let c=''; for(let i=0;i<5;i++)c+=LETRAS_SALA[(rnd()*LETRAS_SALA.length)|0]; return c; }
 function listaIds(){ return REDE.ordem.filter(function(id){ return REDE.jogadores[id]; }); }
-function limpaNome(n){ const t=String(n||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,12); return t||'Jogador'; }
+// apelido: até 40 letras, só como trava para um nome gigante não travar a tela dos outros
+function limpaNome(n){ const t=String(n||'').replace(/[\u0000-\u001f<>]/g,'').trim().slice(0,40); return t||'Jogador'; }
 function limpaVisual(v){ const o={}; for(const k in VIS){ const n=v&&v[k]; o[k]=Number.isInteger(n)&&n>=0&&n<VIS[k].length?n:0; } return o; }
 function meuApelido(){ return limpaNome($('tApelido').value); }
 function salvarApelido(){ try{ localStorage.setItem('zonaz_apelido',meuApelido()); }catch(e){} }
@@ -3114,6 +3241,7 @@ function hostRecebe(id,m){
     if(z)ferirZumbi(z,clamp(+m.d||0,0,900),z.x,z.y+1.2*z.t.s,z.z,!!m.c);
   }
   else if(m.t==='tiro'){ if(!REDE.emJogo)return; m.de=id; transmitir(m,id); verTiro(m); }
+  else if(m.t==='granada'){ if(!REDE.emJogo)return; transmitir(m,id); granadaRemota(m); }   // o anfitrião simula a granada do amigo e tira a vida dos zumbis
 }
 function enviarSala(){ transmitir({t:'sala',dif:dif,jogadores:listaIds().map(function(id){ const j=REDE.jogadores[id]; return {id:id,nome:j.nome,visual:j.visual}; })}); }
 function saiuJogador(id){
@@ -3182,7 +3310,9 @@ function clienteRecebe(m){
     case 'dano': if(REDE.emJogo)ferirJogador(+m.d||0); break;
     case 'levanta': if(REDE.emJogo)levantar(); break;
     case 'aviso': if(REDE.emJogo){ faixa(String(m.a||''),String(m.b||'')); somTom(440,880,.3,.1,'triangle'); } break;
-    case 'onda': if(REDE.emJogo){ G.onda=m.n|0; REDE.filaHost=m.q|0; avisoOnda(G.onda,REDE.filaHost); itensDaOnda(G.onda); } break;
+    case 'onda': if(REDE.emJogo){ G.onda=m.n|0; REDE.filaHost=m.q|0; REDE.pausaHost=0; avisoOnda(G.onda,REDE.filaHost); if(G.onda===1)itensDaOnda(1); } break;
+    case 'intervalo': if(REDE.emJogo){ REDE.pausaHost=+m.s||INTERVALO_ONDA; faixa(String(m.a||''),String(m.b||'')); somTom(440,880,.3,.1,'triangle'); itensDaOnda(m.n|0); } break;
+    case 'granada': if(REDE.emJogo)granadaRemota(m); break;
     case 'clima': if(REDE.emJogo)G.relogio=+m.r||0; break;
     case 'fim': if(REDE.emJogo)fimCoop(m); break;
   }
@@ -3201,7 +3331,7 @@ function comecarCoop(m){
   if(REDE.difAntes===null){ REDE.difAntes=dif; REDE.horaAntes=hora; }
   if(DIF[m.dif])dif=m.dif;
   if(m.hora==='sorteio'||m.hora==='dia'||m.hora==='noite')hora=m.hora;
-  REDE.emJogo=true; REDE.campos={}; REDE.reviver={}; REDE.novosZ=[]; REDE.mortosZ=[]; REDE.mapaZ={}; REDE.filaHost=0; REDE.meuRv=0;
+  REDE.emJogo=true; REDE.campos={}; REDE.reviver={}; REDE.novosZ=[]; REDE.mortosZ=[]; REDE.mapaZ={}; REDE.filaHost=0; REDE.meuRv=0; REDE.pausaHost=0;
   REDE.tick=0; REDE.tickZ=0; REDE.tickClima=5; REDE.tickEquipe=0;
   removerBonecos(); $('sala').hidden=true;
   comecar('ondas',false,clamp(m.mapa|0,0,MAPAS.length-1),REDE.papel==='cliente');
@@ -3246,6 +3376,7 @@ function reviverTick(dt){
 // troca de mensagens durante a partida
 function redeTick(dt){
   REDE.tick-=dt; REDE.tickZ-=dt; REDE.tickClima-=dt; REDE.tickEquipe-=dt;
+  if(REDE.pausaHost>0)REDE.pausaHost-=dt;
   if(REDE.papel==='cliente'){
     if(REDE.tick<=0){ REDE.tick=1/15; enviarHost({t:'eu',x:r2(P.x),y:r2(P.y),z:r2(P.z),c:r2(P.corpo),p:r2(P.pitch),a:P.arma==='maos'?'':P.arma,m:P.mov|0,k:P.caido?1:0,h:Math.round(P.hp)}); }
   }else if(REDE.papel==='host'){
@@ -3432,10 +3563,10 @@ $('bCompartilhar').addEventListener('click',function(){
   const h=location.hash, convite=h.match(/^#sala-([A-Za-z0-9]{5})$/), teste=h.match(/^#teste-(host|cliente)-([A-Z0-9]{5})$/);
   if(convite)setTimeout(function(){ abrirSala(convite[1].toUpperCase()); },300);
   else if(teste){
-    window.ZZ={G:G,P:P,REDE:REDE,ferirZumbi:ferirZumbi,listaIds:listaIds,get zumbis(){ return zumbis; },get estado(){ return G.estado; }};
+    window.ZZ={G:G,P:P,REDE:REDE,ferirZumbi:ferirZumbi,listaIds:listaIds,lancarGranada:lancarGranada,explodir:explodir,get zumbis(){ return zumbis; },get estado(){ return G.estado; },get granadas(){ return granadas; }};
     graf='leve'; aplicarGraf(); REDE.mapaTeste=2;   // no teste: gráficos leves e sempre a Cidade, para o computador de teste aguentar
     setTimeout(function(){
-      $('tApelido').value=teste[1]==='host'?'Anfitriao':'Amigo';
+      $('tApelido').value=teste[1]==='host'?'Anfitriao':'Amigo com um apelido bem comprido';
       abrirSala();
       if(teste[1]==='host'){ criarSala(teste[2]); const espera=setInterval(function(){ if(listaIds().length>=2){ clearInterval(espera); setTimeout(comecarSalaHost,1500); } },500); }
       else entrarSala(teste[2]);
