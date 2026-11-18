@@ -124,6 +124,9 @@ h2{font-family:var(--font-display);font-weight:400;font-size:clamp(26px,7vw,40px
 .ajuda{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px 24px;border-top:1px solid var(--line);padding-top:14px;font-size:14px;color:var(--dim);line-height:1.5}
 .ajuda b{color:var(--bone)}
 .ajuda p{margin:0}
+.creditos{display:block}
+.creditos summary{cursor:pointer;color:var(--bone);font-weight:600}
+.creditos p{margin:8px 0 0}
 .acoes{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
 .btn{font:inherit;font-weight:700;cursor:pointer;padding:12px 20px;border:2px solid var(--hazard);background:var(--hazard);color:var(--night);text-transform:uppercase;letter-spacing:.06em}
 .btn.sec{background:transparent;color:var(--bone);border-color:var(--line)}
@@ -277,6 +280,9 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
       <button class="btn sec peq" type="button" id="bInstalar">Instalar o jogo</button>
       <span class="sub" id="instalarDica"></span>
     </div>
+    <div class="acoes" id="sairBox" hidden>
+      <button class="btn sec peq" type="button" id="bSair">Sair do jogo</button>
+    </div>
     <div class="ajuda">
       <p><b>Computador:</b> WASD anda, mouse mira, clique atira, botão direito usa a mira, R recarrega, os números ou a rodinha trocam de arma, Shift corre, Espaço pula, G joga granada, H usa cura, V troca entre primeira e terceira pessoa, M abre o mapa grande, Esc pausa.</p>
       <p><b>Granadas:</b> você começa com 2 e acha mais pelo mapa e a cada onda. Ela quica, explode depois de quase 2 segundos e acaba com os zumbis em volta, sem machucar você nem os amigos. Boa para quando juntam muitos numa sala.</p>
@@ -290,6 +296,16 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
       <p><b>Estamina:</b> correr e pular gastam a barra azul. Se ela zerar, você fica cansado e só volta a correr quando recuperar um pouco.</p>
       <p><b>Mapa:</b> a seta é você. O desenho de arma colorido é uma arma (no mapa grande aparece o nome), amarelo é munição, verde é cura, vermelho é zumbi. No mundo aberto e na fuga o mapa mostra só a região em volta de você; na fuga, G é gasolina e H é o helicóptero, e eles ficam na borda do mapa apontando a direção.</p>
     </div>
+    <details class="ajuda creditos">
+      <summary>Créditos e licenças</summary>
+      <p><b>Zona Z</b>, de jogoZonaZ.</p>
+      <p><b>Tiros:</b> "The Free Firearm Sound Library" (freefirearmsfx.com), licença CC0.</p>
+      <p><b>Recargas:</b> zer0_sol, SpringySpringo e BMacZero, no OpenGameArt, licença CC0.</p>
+      <p><b>Vozes dos zumbis:</b> "Zombies Sound Pack", de artisticdude, no OpenGameArt, licença CC0.</p>
+      <p><b>Músicas:</b> "EmptyCity" e "Insistent", de yd, no OpenGameArt, licença CC0.</p>
+      <p><b>Fontes:</b> Bungee (David Jonathan Ross) e Chakra Petch (Cadson Demak), licença SIL Open Font License 1.1.</p>
+      <p><b>Programas usados:</b> three.js r128 (licença MIT, © 2010-2021 three.js authors) e PeerJS 1.5.4 (licença MIT, © 2015 Michelle Bu e Eric Zhang).</p>
+    </details>
   </div>
 </div>
 
@@ -3272,6 +3288,8 @@ $('bInstalar').addEventListener('click',function(){
   pedidoInstalar.userChoice.then(function(){ pedidoInstalar=null; $('instalarBox').hidden=true; },function(){});
 });
 window.addEventListener('appinstalled',function(){ $('instalarBox').hidden=true; });
+// no programa de Windows aparece o botão de sair (no navegador quem fecha é a aba)
+if(window.ZZ_DESKTOP===true){ $('sairBox').hidden=false; $('bSair').addEventListener('click',function(){ window.close(); }); }
 (function(){
   // iPhone e iPad não têm botão de instalar: mostra como fazer pelo Safari
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -3318,7 +3336,8 @@ const REDE={papel:null,peer:null,codigo:'',meuId:'host',conns:{},host:null,jogad
   difAntes:null,horaAntes:null,difHost:'medio',tick:0,tickZ:0,tickClima:0,tickEquipe:0,novosZ:[],mortosZ:[],mortosInfo:[],
   campos:{},reviver:{},mapaZ:{},bonecos:{},filaHost:0,meuRv:0,pausaHost:0};
 const LETRAS_SALA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // sem 0, O, 1 e I, que se confundem
-function podeRede(){ return /github\.io$/.test(location.hostname)||location.hostname==='localhost'||location.hostname==='127.0.0.1'; }
+// o modo com amigos funciona no site do GitHub, no computador (localhost) e no programa de Windows (ZZ_DESKTOP)
+function podeRede(){ return /github\.io$/.test(location.hostname)||location.hostname==='localhost'||location.hostname==='127.0.0.1'||window.ZZ_DESKTOP===true; }
 function r2(v){ return Math.round(v*100)/100; }
 function idSala(c){ return 'zona-z-sala-'+c; }
 function novoCodigo(){ let c=''; for(let i=0;i<5;i++)c+=LETRAS_SALA[(rnd()*LETRAS_SALA.length)|0]; return c; }
