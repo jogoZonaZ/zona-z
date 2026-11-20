@@ -78,6 +78,7 @@ body{margin:0;background:var(--night);color:var(--bone);font-family:var(--font-u
 #aviso{position:absolute;left:50%;bottom:22%;transform:translateX(-50%);padding:6px 12px;background:rgba(0,0,0,.6);border:1px solid var(--line);opacity:0;transition:opacity .25s;white-space:nowrap;font-weight:600}
 #recarga{position:absolute;left:50%;top:calc(50% + 34px);transform:translateX(-50%);font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--hazard);text-shadow:0 1px 3px #000}
 #vinheta{position:fixed;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at center,transparent 45%,rgba(226,69,47,.75) 100%)}
+#frio{position:fixed;inset:0;pointer-events:none;opacity:0;transition:opacity .3s;background:radial-gradient(ellipse at center,transparent 50%,rgba(143,224,255,.6) 100%)}
 #luneta{position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at center,transparent 0,transparent 33vmin,#000 33.6vmin)}
 #luneta::before,#luneta::after{content:"";position:absolute;background:#000}
 #luneta::before{left:50%;top:calc(50% - 33vmin);width:1px;height:66vmin}
@@ -88,20 +89,31 @@ body{margin:0;background:var(--night);color:var(--bone);font-family:var(--font-u
 .bt{position:absolute;border-radius:50%;border:2px solid rgba(235,230,214,.55);background:rgba(13,20,24,.5);color:var(--bone);
   font-family:var(--font-ui);font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;text-transform:uppercase;letter-spacing:.04em;padding:0}
 .bt.on{background:var(--hazard);color:var(--night);border-color:var(--hazard)}
-#bTiro{right:8px;bottom:70px;width:86px;height:86px;border-color:var(--blood);font-size:14px}
-#bRec{right:108px;bottom:60px;width:58px;height:58px}
-#bPulo{right:14px;bottom:170px;width:58px;height:58px}
-#bMira{right:96px;bottom:134px;width:58px;height:58px}
-#bArma{right:176px;bottom:70px;width:58px;height:58px}
-#bPausa{right:0;top:162px;width:44px;height:44px;border-radius:6px}
+/* celular: o lado esquerdo é só para andar (o direcional aparece onde o dedo encosta).
+   À direita ficam os três botões de luta: atirar (o maior), cura e granada.
+   O resto fica em cima (ao lado do mapa) e embaixo (canto direito). */
+#bTiro{right:6px;bottom:50px;width:86px;height:86px;border-color:var(--blood);font-size:15px}
+#bCura{right:100px;bottom:46px;width:58px;height:58px;border-color:var(--rot)}
+#bBomba{right:104px;bottom:114px;width:58px;height:58px;border-color:#9ab84a}
+#ui.toque #bombas{display:none}
+/* tela baixa (celular deitado com a barra do navegador): minimapa menor, para não encostar nos botões */
+@media (max-height:340px){ #ui.toque #hud #mapa{width:92px;height:92px} }
+.bt small{position:absolute;top:3px;right:8px;font-size:12px;color:var(--hazard);letter-spacing:0}
+.bt.baixo{bottom:0;width:48px;height:40px;border-radius:10px;font-size:10px}
+#bPulo{right:6px} #bMira{right:60px} #bRec{right:114px} #bArma{right:168px}
+.bt.cima{top:0;width:46px;height:40px;border-radius:8px;font-size:10px}
+#bPausa{right:124px} #bMapa{right:176px} #bCam{right:228px} #bInv{right:280px}
+#ui.toque #hotbar{left:128px;transform:none;gap:4px}
+#ui.toque .sl{width:48px;height:52px}
+#ui.toque .sl img{width:30px;height:30px}
+#ui.toque .barra{width:120px}
+#ui.toque #torreBox{top:48px}
+#ui.toque #objetivo{top:100px}
 #joy{position:absolute;width:110px;height:110px;margin:-55px 0 0 -55px;border-radius:50%;border:2px solid rgba(235,230,214,.35);pointer-events:none}
 #joy i{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:rgba(235,230,214,.4)}
-#ui.toque #cInfDir{right:auto;left:50%;transform:translateX(-50%);align-items:center;text-align:center}
+#ui.toque #cInfDir{right:auto;left:128px;bottom:58px;transform:none;align-items:flex-start;text-align:left}
 #ui.toque #slots{display:none}
 #ui.toque #mapa{width:112px;height:112px}
-#ui.toque #bPausa{top:124px}
-#bMapa{right:52px;top:162px;width:44px;height:44px;border-radius:6px;font-size:10px}
-#ui.toque #bMapa{top:124px}
 #mapa.grande{width:min(72vmin,520px);height:min(72vmin,520px)}
 #ui.toque #mapa.grande{width:min(80vmin,420px);height:min(80vmin,420px)}
 
@@ -157,13 +169,6 @@ a.btn{text-decoration:none;display:inline-block}
 #salaLista li{overflow-wrap:anywhere}
 #equipe em{font-style:normal;font-weight:400}
 #coopMsg{position:absolute;left:50%;top:62%;transform:translateX(-50%);padding:8px 14px;background:rgba(0,0,0,.65);border:1px solid var(--blood);font-weight:700;text-align:center;max-width:90%}
-#bCam{right:104px;top:162px;width:44px;height:44px;border-radius:6px;font-size:10px}
-#ui.toque #bCam{top:124px}
-#bInv{right:156px;top:162px;width:44px;height:44px;border-radius:6px;font-size:10px}
-#ui.toque #bInv{top:124px}
-#bCura{right:208px;top:162px;width:44px;height:44px;border-radius:6px;font-size:10px}
-#ui.toque #bCura{top:124px}
-#bBomba{right:176px;bottom:150px;width:58px;height:58px;border-color:#9ab84a}
 
 /* inventário: 5 espaços da mão embaixo da tela; a mochila abre com I */
 #hotbar{position:absolute;left:50%;bottom:0;transform:translateX(-50%);display:flex;gap:6px;pointer-events:auto;z-index:2}
@@ -181,7 +186,6 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
 .painel.inv{max-width:360px;background:var(--panel);border:1px solid var(--line);padding:16px;gap:12px;box-sizing:border-box}
 .btn:disabled{opacity:.4;cursor:default}
 #estBarra.inf{background:var(--hazard)}
-#ui.toque #cInfDir{bottom:62px}
 
 /* tela de preparação: personagem em 3D à esquerda (a cena aparece por trás), opções à direita */
 #lobby{position:fixed;inset:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr auto;grid-template-areas:"zona op" "pjops op";pointer-events:none;box-sizing:border-box;
@@ -212,6 +216,7 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
 
 <canvas id="c"></canvas>
 <div id="vinheta"></div>
+<div id="frio"></div>
 <div id="luneta" hidden></div>
 
 <div id="ui">
@@ -227,7 +232,7 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
       </div>
     </div>
     <div class="canto" id="cSupDir"><canvas id="mapa"></canvas></div>
-    <div id="torreBox" hidden><span class="rot">Chefão</span><div class="barra"><i id="torreBarra"></i></div></div>
+    <div id="torreBox" hidden><span class="rot" id="chefeNome">Chefão</span><div class="barra"><i id="torreBarra"></i></div></div>
     <div id="objetivo" hidden></div>
     <div class="canto" id="cInfEsq">
       <span id="vidas">♥♥♥</span>
@@ -250,16 +255,16 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
     <div id="toque" hidden>
       <div id="joy" hidden><i id="joyK"></i></div>
       <button class="bt" id="bTiro" data-act="tiro" type="button">Atirar</button>
-      <button class="bt" id="bRec" data-act="rec" type="button">Recar.</button>
-      <button class="bt" id="bPulo" data-act="pulo" type="button">Pulo</button>
-      <button class="bt" id="bMira" data-act="mira" type="button">Mira</button>
-      <button class="bt" id="bArma" data-act="arma" type="button">Arma</button>
-      <button class="bt" id="bPausa" data-act="pausa" type="button">II</button>
-      <button class="bt" id="bMapa" data-act="mapa" type="button">Mapa</button>
-      <button class="bt" id="bCam" data-act="cam" type="button">Câm</button>
-      <button class="bt" id="bInv" data-act="inv" type="button">Inv</button>
-      <button class="bt" id="bCura" data-act="curar" type="button">Cura</button>
-      <button class="bt" id="bBomba" data-act="bomba" type="button">Bomba</button>
+      <button class="bt" id="bCura" data-act="curar" type="button">Cura<small id="nCura"></small></button>
+      <button class="bt" id="bBomba" data-act="bomba" type="button">Bomba<small id="nBomba"></small></button>
+      <button class="bt baixo" id="bPulo" data-act="pulo" type="button">Pulo</button>
+      <button class="bt baixo" id="bMira" data-act="mira" type="button">Mira</button>
+      <button class="bt baixo" id="bRec" data-act="rec" type="button">Recar.</button>
+      <button class="bt baixo" id="bArma" data-act="arma" type="button">Arma</button>
+      <button class="bt cima" id="bPausa" data-act="pausa" type="button">II</button>
+      <button class="bt cima" id="bMapa" data-act="mapa" type="button">Mapa</button>
+      <button class="bt cima" id="bCam" data-act="cam" type="button">Câm</button>
+      <button class="bt cima" id="bInv" data-act="inv" type="button">Inv</button>
     </div>
     <div id="hotbar"></div>
   </div>
@@ -273,7 +278,7 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
       <button class="modo" type="button" id="mOndas" data-modo="ondas"><b>Ondas</b><span>Sobreviva onda após onda. 3 vidas e kits de cura pelo mapa.</span><em id="recOndas"></em></button>
       <button class="modo" type="button" id="mFuga" data-modo="fuga"><b>Fuga</b><span>Ache 3 galões de gasolina no mapa gigante e chegue ao helicóptero antes do tempo acabar. Uma vida.</span><em id="recFuga"></em></button>
       <button class="modo hc" type="button" id="mMundo" data-modo="mundo"><b>Mundo aberto</b><span>Mapa gigante com cidade, floresta, fazenda, cemitério e escola. Uma vida. Ache armas, cura e munição e sobreviva o quanto der.</span><em id="recMundo"></em></button>
-      <button class="modo" type="button" id="mAmigos" data-amigos="1"><b>Com amigos</b><span>Crie uma sala, mande o convite e enfrentem as ondas juntos, de 2 a 4 jogadores. Quem cai pode ser levantado pelos amigos.</span><em>Novo</em></button>
+      <button class="modo" type="button" id="mAmigos" data-amigos="1"><b>Com amigos</b><span>Crie uma sala, mande o convite e joguem Ondas, Mundo aberto ou Fuga juntos, de 2 a 4 jogadores. Os itens são do time e quem cai pode ser levantado pelos amigos.</span><em>Novo</em></button>
     </div>
     <p class="sub">Escolha um modo. Na tela seguinte você monta o personagem, ajusta as opções e inicia o jogo.</p>
     <div class="acoes" id="instalarBox" hidden>
@@ -281,7 +286,7 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
       <span class="sub" id="instalarDica"></span>
     </div>
     <div class="acoes" id="sairBox" hidden>
-      <button class="btn sec peq" type="button" id="bSair">Sair do jogo</button>
+      <button class="btn sec peq" type="button" id="bFecharJogo">Sair do jogo</button>
     </div>
     <div class="ajuda">
       <p><b>Computador:</b> WASD anda, mouse mira, clique atira, botão direito usa a mira, R recarrega, os números ou a rodinha trocam de arma, Shift corre, Espaço pula, G joga granada, H usa cura, V troca entre primeira e terceira pessoa, M abre o mapa grande, Esc pausa.</p>
@@ -292,6 +297,7 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
       <p><b>Inventário:</b> os 5 espaços embaixo da tela são o que você leva na mão (teclas 1 a 5 ou a rodinha). A tecla I abre a mochila, com mais 20 espaços, e o jogo fica parado enquanto ela está aberta. Atadura, água, remédio e kit médico recuperam vida e dão estamina infinita por 30 segundos: segure o item e clique para usar, ou aperte H para usar o melhor da mochila.</p>
       <p><b>Lugares especiais:</b> dá para entrar no celeiro e na casa da fazenda, nos mausoléus do cemitério e na farmácia e no mercado da cidade. O celeiro sempre tem uma arma épica, a farmácia tem kits médicos e o mercado tem água e munição, mas tem zumbi guardando. Depois de pego, o prêmio volta em 3 minutos. No mapa, o anel dourado marca esses prêmios e o triângulo branco marca item no andar de cima da escola.</p>
       <p><b>Zumbis diferentes:</b> de vez em quando aparece um policial (pode deixar munição ou revólver), um militar (aguenta muito, o capacete segura o primeiro tiro na cabeça e pode deixar arma pesada), um médico perto da farmácia (pode deixar cura) ou um professor na escola. No mapa, policial é azul, militar é amarelo e médico é branco.</p>
+      <p><b>Chefões de elementos:</b> a cada 5 ondas, e de tempos em tempos no Mundo aberto, vem um chefão de fogo, gelo, veneno ou raio. O de fogo deixa fogo no chão e joga bolas de fogo; o de gelo deixa você lento e congela o chão (saia da marca azul); o de veneno cospe poças tóxicas; o de raio dá investidas e chama raios (saia da marca amarela). Ele sempre deixa um kit médico e munição.</p>
       <p><b>Dia e noite:</b> de dia aparecem mais itens pelo mapa, é a hora de se equipar. De noite os zumbis ficam mais rápidos, nascem em maior número e valem mais pontos: dá para se abrigar ou sair à luta. Os olhos deles brilham no escuro.</p>
       <p><b>Estamina:</b> correr e pular gastam a barra azul. Se ela zerar, você fica cansado e só volta a correr quando recuperar um pouco.</p>
       <p><b>Mapa:</b> a seta é você. O desenho de arma colorido é uma arma (no mapa grande aparece o nome), amarelo é munição, verde é cura, vermelho é zumbi. No mundo aberto e na fuga o mapa mostra só a região em volta de você; na fuga, G é gasolina e H é o helicóptero, e eles ficam na borda do mapa apontando a direção.</p>
@@ -363,7 +369,7 @@ button.sl:focus-visible{outline:2px solid var(--bone);outline-offset:1px}
       </div>
       <span class="rot">Jogadores</span>
       <ul id="salaLista"></ul>
-      <div class="acoes"><button class="btn" type="button" id="bComecarSala">Começar partida</button><button class="btn sec peq" type="button" id="bDifSala">Dificuldade: médio</button></div>
+      <div class="acoes"><button class="btn" type="button" id="bComecarSala">Começar partida</button><button class="btn sec peq" type="button" id="bModoSala">Modo: Ondas</button><button class="btn sec peq" type="button" id="bDifSala">Dificuldade: médio</button></div>
     </div>
     <p class="sub" id="salaStatus"></p>
     <div class="acoes"><button class="btn sec" type="button" id="bSairSala">Voltar</button></div>
@@ -1230,13 +1236,16 @@ function construir(o,pai){
 // dia e noite: diaF vai de 0 (noite) a 1 (dia claro). O alcance da visão dobra nos gráficos bonitos e cresce de dia.
 let diaF=0, posteInt=1.5, covas=[];
 // cemitério: o dobro de zumbis, tipos mais misturados e parte deles sai das covas
-function noCemiterio(){
-  for(const t of tilesG)if(t.chao==='gramaEscura'&&Math.abs(P.x-t.x)<=40&&Math.abs(P.z-t.z)<=40)return true;
+// x, z: em volta de quem olhar (sem eles, do próprio jogador)
+function noCemiterio(x,z){
+  if(x===undefined){ x=P.x; z=P.z; }
+  for(const t of tilesG)if(t.chao==='gramaEscura'&&Math.abs(x-t.x)<=40&&Math.abs(z-t.z)<=40)return true;
   return false;
 }
-function pontoCova(){
+function pontoCova(x,z){
+  if(x===undefined){ x=P.x; z=P.z; }
   for(let k=0;k<14&&covas.length;k++){
-    const c=sorteia(covas), d=Math.hypot(c.x-P.x,c.z-P.z);
+    const c=sorteia(covas), d=Math.hypot(c.x-x,c.z-z);
     if(d<8||d>65||blocked[cel(c.x,c.z)])continue;
     return [c.x,c.z];
   }
@@ -1685,20 +1694,69 @@ function sortearVariante(x,z){
   if(r<.075)return 'medico';   // um ou outro médico perdido pelo mapa
   return null;
 }
-function criarZumbiMesh(t,vr){
-  const V=vr?VARIANTES[vr]:null;
-  const pele=mat(sorteia(t.peles)), roupa=mat(sorteia(V?V.roupas:t.roupas)), calca=mat(sorteia(V?V.calcas:t.calcas));
+/* ---------- chefões de elementos ---------- */
+// A cada 5 ondas (e de tempos em tempos no Mundo aberto) vem um chefão de um elemento, nesta ordem: fogo, gelo, veneno, raio.
+// O anfitrião (ou quem joga sozinho) decide os poderes; os perigos que eles criam (fogo no chão, bolas, poças, raios)
+// aparecem para todos e cada jogo tira a vida só do próprio jogador.
+const ELEMENTOS={
+  fogo:  {nome:'Chefão de Fogo',  cor:0xff6a1f, cor2:0xffd23a, css:'#ff6a1f', pele:0x7a2414, roupa:0x2a1410, olho:0xffd23a, sub:'Deixa fogo por onde passa e joga bolas de fogo'},
+  gelo:  {nome:'Chefão de Gelo',  cor:0x8fe0ff, cor2:0xffffff, css:'#8fe0ff', pele:0x9cc4d8, roupa:0x3a5a78, olho:0xe8fbff, sub:'Perto dele você fica lento, e o chão congela embaixo de você'},
+  veneno:{nome:'Chefão de Veneno',cor:0x8ee04a, cor2:0xd8ff5a, css:'#8ee04a', pele:0x3c6a2c, roupa:0x2a3a1c, olho:0xd8ff5a, sub:'Cospe veneno de longe e deixa poças tóxicas'},
+  raio:  {nome:'Chefão de Raio',  cor:0xf2e04a, cor2:0xffffff, css:'#f2e04a', pele:0x4a3c78, roupa:0x1e1a36, olho:0xfff7a0, sub:'Dá investidas rápidas e chama raios do céu'}
+};
+const ORDEM_EL=['fogo','gelo','veneno','raio'];
+const matsEl={};
+function matEl(el){
+  if(matsEl[el])return matsEl[el];
+  const E=ELEMENTOS[el], c=new THREE.Color(E.cor), rgb=Math.round(c.r*255)+','+Math.round(c.g*255)+','+Math.round(c.b*255);
+  // aura: brilho colorido em volta do corpo, que aparece de dia e de noite
+  const cv=document.createElement('canvas'); cv.width=cv.height=64; const g=cv.getContext('2d');
+  const gr=g.createRadialGradient(32,32,0,32,32,32); gr.addColorStop(0,'rgba('+rgb+',.5)'); gr.addColorStop(.5,'rgba('+rgb+',.16)'); gr.addColorStop(1,'rgba('+rgb+',0)');
+  g.fillStyle=gr; g.fillRect(0,0,64,64);
+  return matsEl[el]={brilha:new THREE.MeshBasicMaterial({color:E.cor}),brilha2:new THREE.MeshBasicMaterial({color:E.cor2}),olho:new THREE.MeshBasicMaterial({color:E.olho}),
+    aura:new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),blending:THREE.AdditiveBlending,transparent:true,depthWrite:false}),part:new THREE.MeshBasicMaterial({color:E.cor})};
+}
+// detalhes que brilham em cada chefão
+function enfeitarChefe(el,tronco,cabeca){
+  const b=matEl(el).brilha, b2=matEl(el).brilha2, N=false;
+  if(el==='fogo'){
+    // rachaduras em brasa no peito e nas costas, e chamas no lugar do cabelo
+    for(const r of [[-.15,.55,.05,.3],[.12,.45,.04,.28],[0,.25,.22,.04],[-.08,.12,.04,.18],[.18,.2,.05,.2]])tronco.add(caixa(r[2],r[3],.02,b,r[0],r[1],.18,N),caixa(r[2],r[3],.02,b,-r[0],r[1]+.05,-.18,N));
+    cabeca.add(caixa(.16,.3,.16,b,-.12,.36,0,N),caixa(.14,.44,.14,b2,.04,.42,-.04,N),caixa(.12,.26,.12,b,.15,.34,.08,N));
+  }else if(el==='gelo'){
+    // espinhos de gelo nos ombros e nas costas, e uma coroa de cristais
+    for(const s of [-1,1]){ const e=caixa(.12,.44,.12,b,s*.28,.86,-.05,N); e.rotation.z=-s*.5; tronco.add(e); }
+    for(let i=0;i<3;i++){ const e=caixa(.1,.34,.1,b2,(i-1)*.18,.55,-.2,N); e.rotation.x=-.6; tronco.add(e); }
+    for(let i=0;i<4;i++)cabeca.add(caixa(.08,.22+(i%2)*.12,.08,i%2?b2:b,-.18+i*.12,.34,0,N));
+  }else if(el==='veneno'){
+    // bolhas tóxicas no corpo e na cabeça, e baba verde
+    for(const r of [[-.18,.5,.12],[.15,.62,.09],[.05,.3,.1],[-.1,.15,.08],[.2,.15,.07]])tronco.add(caixa(r[2],r[2],r[2],b,r[0],r[1],.19,N),caixa(r[2],r[2],r[2],b2,-r[0],r[1]+.04,-.19,N));
+    cabeca.add(caixa(.1,.1,.1,b,.2,.18,.2,N),caixa(.08,.08,.08,b2,-.22,-.05,.18,N),caixa(.06,.2,.03,b,.05,-.28,.26,N));
+  }else if(el==='raio'){
+    // raios em zigue-zague no peito e nas costas, e dois chifres de raio
+    for(const r of [[-.12,.62,-.6],[0,.47,.6],[-.1,.32,-.6],[.03,.17,.6]]){
+      const e=caixa(.05,.2,.02,b,r[0],r[1],.18,N); e.rotation.z=r[2]; tronco.add(e);
+      const f=caixa(.05,.2,.02,b2,-r[0],r[1],-.18,N); f.rotation.z=-r[2]; tronco.add(f);
+    }
+    for(const s of [-1,1]){ const e=caixa(.06,.32,.06,b,s*.18,.38,0,N); e.rotation.z=-s*.35; cabeca.add(e); }
+  }
+}
+function criarZumbiMesh(t,vr,el){
+  const V=vr?VARIANTES[vr]:null, E=el?ELEMENTOS[el]:null;
+  const pele=mat(E?E.pele:sorteia(t.peles)), roupa=mat(E?E.roupa:sorteia(V?V.roupas:t.roupas)), calca=mat(E?E.roupa:sorteia(V?V.calcas:t.calcas));
+  const mOlhoZ=E?matEl(el).olho:mOlho;
   // "YXZ": ao cair, o zumbi tomba para trás, para a frente ou de lado em relação a ele mesmo (não ao mapa)
   const g=new THREE.Group(), tronco=new THREE.Group(); g.rotation.order='YXZ'; tronco.position.y=.75;
   // a cabeça é um grupo à parte (centro em y = 1 do tronco): num tiro na cabeça que mata, ela sai voando
   const cabeca=new THREE.Group(); cabeca.position.y=1; tronco.add(cabeca);
   tronco.add(caixa(.6,.75,.35,roupa,0,.375,0));
   cabeca.add(caixa(.5,.5,.5,pele,0,0,0));
-  cabeca.add(caixa(.09,.07,.02,mOlho,-.12,.05,.255,false),caixa(.09,.07,.02,mOlho,.12,.05,.255,false));
+  cabeca.add(caixa(.09,.07,.02,mOlhoZ,-.12,.05,.255,false),caixa(.09,.07,.02,mOlhoZ,.12,.05,.255,false));
   cabeca.add(caixa(.24,.07,.02,mBoca,0,-.14,.255,false));
   tronco.add(caixa(.2+rnd()*.15,.2+rnd()*.2,.02,mFerida,(rnd()-.5)*.25,.3+rnd()*.25,.18,false));
+  if(E)enfeitarChefe(el,tronco,cabeca);
   if(vr==='professor')cabeca.add(caixa(.52,.14,.52,mat(0x8a8a86),0,.3,0));   // cabelo grisalho
-  else if(vr!=='policial'&&vr!=='militar'&&rnd()<.6)cabeca.add(caixa(.52,.14,.52,mat(sorteia([0x1c1612,0x3a2a1a,0x55504a])),0,.3,0));
+  else if(!E&&vr!=='policial'&&vr!=='militar'&&rnd()<.6)cabeca.add(caixa(.52,.14,.52,mat(sorteia([0x1c1612,0x3a2a1a,0x55504a])),0,.3,0));
   let capacete=null;
   const preto=mat(0x151515);
   if(vr==='professor'){
@@ -1734,27 +1792,31 @@ function criarZumbiMesh(t,vr){
   pd.add(caixa(.26,.75,.26,rnd()<.3?pele:calca,0,-.375,0),caixa(.27,.1,.34,mSapato,0,-.7,.04));
   g.add(pe,pd,tronco);
   g.scale.setScalar(t.s);
-  // brilho vermelho dos olhos, que aparece de noite e atravessa a neblina
-  const brilho=new THREE.Sprite(matBrilho); brilho.position.set(0,.05,.3); brilho.scale.set(.6,.3,1); cabeca.add(brilho);
-  return {g:g,tronco:tronco,cabeca:cabeca,pe:pe,pd:pd,be:be,bd:bd,brilho:brilho,capacete:capacete};
+  // brilho vermelho dos olhos, que aparece de noite e atravessa a neblina; o chefão de elemento tem uma aura colorida no lugar
+  let brilho=null, aura=null;
+  if(E){ aura=new THREE.Sprite(matEl(el).aura); aura.position.set(0,.55,0); aura.scale.set(3,3.6,1); tronco.add(aura); }
+  else{ brilho=new THREE.Sprite(matBrilho); brilho.position.set(0,.05,.3); brilho.scale.set(.6,.3,1); cabeca.add(brilho); }
+  return {g:g,tronco:tronco,cabeca:cabeca,pe:pe,pd:pd,be:be,bd:bd,brilho:brilho,aura:aura,capacete:capacete};
 }
 let zumbis=[], corpos=[];
 // "tProprio" é usado pelo chefão, que tem tamanho e vida próprios a cada aparição
 // "pos" ([x, z]) faz o zumbi nascer num lugar escolhido, como os que guardam o celeiro e as lojas
 // "forcaVar" escolhe o tipo diferente de propósito (usado só para testes)
-function nascerZumbi(tipo,tProprio,pos,forcaVar){
+// "el": elemento do chefão (fogo, gelo, veneno ou raio)
+function nascerZumbi(tipo,tProprio,pos,forcaVar,el){
   const t=tProprio||ZT[tipo]; let p=pos||null;
   if(!p&&G.cem&&rnd()<.6)p=pontoCova();
   if(!p)p=aberto()?pontoNascerMundo():pontoNascer();
   if(!p)return null;
+  if(!ELEMENTOS[el])el=null;
   const vr=forcaVar||((tipo==='normal'||tipo==='rapido')?sortearVariante(p[0],p[1]):null);
-  const m=criarZumbiMesh(t,vr);
-  const z={tipo:tipo,t:t,g:m.g,tronco:m.tronco,cabeca:m.cabeca,pe:m.pe,pd:m.pd,be:m.be,bd:m.bd,brilho:m.brilho,x:p[0],z:p[1],y:0,andar:0,r:.42*t.s,
+  const m=criarZumbiMesh(t,vr,el);
+  const z={tipo:tipo,t:t,g:m.g,tronco:m.tronco,cabeca:m.cabeca,pe:m.pe,pd:m.pd,be:m.be,bd:m.bd,brilho:m.brilho,aura:m.aura,x:p[0],z:p[1],y:0,andar:0,r:.42*t.s,
     hp:t.hp*(1+.07*(G.onda-1))*DIF[dif].hp*(vr?VARIANTES[vr].hp:1),dx:0,dz:0,atk:.4,fase:rnd()*6,nasce:1,tonto:0,
-    var:vr,capacete:m.capacete,kx:0,kz:0,giro:0};
+    var:vr,capacete:m.capacete,kx:0,kz:0,giro:0,el:el,hab:2.5,rastro:0,invT:4,carga:0,investida:0,ix:0,iz:0,acertou:false};
   z.hpMax=z.hp;
   // cada zumbi tem um número; com amigos, o anfitrião avisa os outros que ele nasceu
-  z.id=++G.zid; if(REDE.papel==='host')REDE.novosZ.push([z.id,tipo,vr||'',Math.round(t.s*100)/100]);
+  z.id=++G.zid; if(REDE.papel==='host')REDE.novosZ.push([z.id,tipo,vr||'',Math.round(t.s*100)/100,el||'']);
   scene.add(z.g); zumbis.push(z);
   // na primeira vez que aparece um policial ou um militar na partida, avisa o que ele pode deixar
   if((vr==='policial'||vr==='militar')&&!G.vistos[vr]){
@@ -1765,6 +1827,14 @@ function nascerZumbi(tipo,tProprio,pos,forcaVar){
 }
 // o que cada zumbi diferente pode deixar no chão ao morrer
 function soltarItem(z){
+  // chefão: sempre deixa um kit médico e munição
+  if(z.tipo==='chefe'){
+    for(const q of [['item','kit',1],['municao',undefined,-1]]){
+      let x=z.x+q[2]*1.2, zz=z.z; if(blocked[cel(x,zz)]){ x=z.x; }
+      const it=criarItem(q[0],q[1],{x:x,z:zz,y:z.y,livre:false}); if(it)it.espera=.6;
+    }
+    return;
+  }
   const r=rnd(); let tipo=null, id;
   if(z.var==='medico'&&r<.45){ tipo='item'; id=sorteia(['atadura','atadura','remedio','kit']); }
   else if(z.var==='policial'&&r<.55){ if(rnd()<.7)tipo='municao'; else{ tipo='arma'; id='revolver'; } }
@@ -1783,14 +1853,23 @@ function pontoNascer(){
   return [(HALF-2.5)*(P.x>0?-1:1),(HALF-2.5)*(P.z>0?-1:1)];
 }
 // mundo aberto: os zumbis surgem em volta do jogador, dentro da neblina
-function pontoNascerMundo(){
+// cx, cz: em volta de qual jogador (sem eles, do próprio); nunca nasce colado em outro jogador
+function pontoNascerMundo(cx,cz,dMin,dVar){
+  if(cx===undefined){ cx=P.x; cz=P.z; }
   for(let k=0;k<40;k++){
-    const a=rnd()*6.283, d=45+rnd()*20, x=P.x+Math.cos(a)*d, z=P.z+Math.sin(a)*d;
+    const a=rnd()*6.283, d=(dMin||45)+rnd()*(dVar===undefined?20:dVar), x=cx+Math.cos(a)*d, z=cz+Math.sin(a)*d;
     if(Math.abs(x)>HALF-2||Math.abs(z)>HALF-2)continue;
     if(blocked[cel(x,z)])continue;
+    if(REDE.emJogo&&pertoDeJogador(x,z,25))continue;
     return [x,z];
   }
   return null;
+}
+// jogadores de pé (com amigos, todos; sozinho, só você): os zumbis do Mundo aberto nascem em volta de um deles
+function jogadoresDePe(){
+  const l=[]; if(!P.caido)l.push({x:P.x,y:P.y,z:P.z,nome:REDE.emJogo?((REDE.jogadores[REDE.meuId]||{}).nome||''):''});
+  if(REDE.papel==='host')for(const id of listaIds()){ const j=REDE.jogadores[id]; if(id!=='host'&&j.x!==undefined&&!j.k)l.push({x:j.x,y:j.y,z:j.z,nome:j.nome}); }
+  return l;
 }
 function tipoPorNivel(n){
   const r=rnd();
@@ -1803,11 +1882,11 @@ function itemMundo(){
   if(r<.4)criarItem('arma',sorteia(ARMAS_MUNDO)); else if(r<.72)criarItem('municao'); else if(r<.92)criarItem('cura'); else criarItem('item','granada');
 }
 function atualizarMundo(dt){
-  G.tempo+=dt;
-  const fuga=G.modo==='fuga', nivel=fuga?2+Math.floor(G.tempo/30):1+Math.floor(G.tempo/45);
+  G.tempo+=dt;   // com amigos, o anfitrião manda o tempo dele de vez em quando e o dos amigos acerta
+  const fuga=G.modo==='fuga', nivel=fuga?2+Math.floor(G.tempo/30):1+Math.floor(G.tempo/45), amigo=REDE.papel==='cliente'&&REDE.emJogo;
   if(nivel!==G.onda){
     if(G.onda>0){
-      if(fuga)avisar('Os zumbis estão mais fortes'); else{ G.pontos+=50*G.onda; faixa('Nível '+nivel,'Os zumbis estão mais fortes'); }
+      if(fuga)avisar('Os zumbis estão mais fortes'); else{ if(!amigo)G.pontos+=50*G.onda; faixa('Nível '+nivel,'Os zumbis estão mais fortes'); }
       somTom(180,90,.5,.12,'sawtooth');
     }
     G.onda=nivel;
@@ -1815,25 +1894,56 @@ function atualizarMundo(dt){
   if(fuga){
     rotor.rotation.y+=dt*14;
     const d=Math.hypot(P.x-G.saida.x,P.z-G.saida.z);
-    if(G.tempo>=G.limite){ acabar('O helicóptero foi embora','O tempo acabou com '+G.gal+' de 3 galões.'); return; }
     if(G.avisoHeli>0)G.avisoHeli-=dt;
-    if(d<5){
-      if(G.gal>=3){ G.pontos+=1000+Math.round((G.limite-G.tempo)*10); acabar('Você escapou!','Fuga em '+relogio(G.tempo)+'.',true); return; }
-      else if(!(G.avisoHeli>0)){ G.avisoHeli=3; avisar('Faltam '+(3-G.gal)+' galões de gasolina'); }
+    if(d<5&&G.gal<3&&!(G.avisoHeli>0)){ G.avisoHeli=3; avisar('Faltam '+(3-G.gal)+' galões de gasolina'); }
+    por('objetivo',G.gal<3?('Gasolina '+G.gal+'/3 · helicóptero a '+Math.round(d)+' m'):((REDE.emJogo?'Corram':'Corra')+' para o helicóptero · '+Math.round(d)+' m'));
+    if(!amigo){
+      // com amigos, basta um do time chegar ao helicóptero com os 3 galões para todos escaparem
+      if(G.tempo>=G.limite){ terminar('O helicóptero foi embora','O tempo acabou com '+G.gal+' de 3 galões.'); return; }
+      if(G.gal>=3){
+        const quem=jogadoresDePe().find(function(j){ return Math.hypot(j.x-G.saida.x,j.z-G.saida.z)<5; });
+        if(quem){
+          G.pontos+=1000+Math.round((G.limite-G.tempo)*10);
+          if(REDE.emJogo)terminar('Vocês escaparam!','Fuga em '+relogio(G.tempo)+'. '+(quem.nome||(REDE.jogadores.host||{}).nome||'Alguém')+' chegou ao helicóptero.',true);
+          else terminar('Você escapou!','Fuga em '+relogio(G.tempo)+'.',true);
+          return;
+        }
+      }
     }
-    por('objetivo',G.gal<3?('Gasolina '+G.gal+'/3 · helicóptero a '+Math.round(d)+' m'):('Corra para o helicóptero · '+Math.round(d)+' m'));
   }
-  G.spawnT-=dt;
   const cem=noCemiterio();
   if(cem!==G.cem){ G.cem=cem; if(cem)avisar('Cemitério: os mortos estão saindo das covas'); }
-  const dz=DIF[dif].z, fn=forcaNoite(), lim=Math.min(64,Math.min(34,5+nivel*2)*(cem?2:1)*dz*(1+.4*fn));
+  if(amigo)return;   // o resto (nascer zumbi, itens, chefão) é com o anfitrião
+  G.spawnT-=dt;
+  // com mais gente, nascem mais zumbis (cada um nasce em volta de um jogador sorteado)
+  const vivos=jogadoresDePe(), nj=Math.max(1,REDE.emJogo?listaIds().length:1);
+  const algumCem=vivos.some(function(j){ return noCemiterio(j.x,j.z); });
+  const dz=DIF[dif].z, fn=forcaNoite(), lim=Math.min(70,Math.min(64,Math.min(34,5+nivel*2)*(algumCem?2:1)*dz*(1+.4*fn))*(1+.5*(nj-1)));
   // no cemitério nunca para de nascer: mesmo com o limite cheio, sai mais um a cada 1,5 s (teto de 70 para o jogo não travar)
-  if(G.spawnT<=0&&G.tempo>4&&(zumbis.length<lim||(cem&&zumbis.length<70))){
-    G.spawnT=(zumbis.length<lim?(cem?.3:.6):1.5)/dz/(1+.4*fn); nascerZumbi(tipoPorNivel(cem?nivel+2:nivel));
+  if(G.spawnT<=0&&G.tempo>4&&vivos.length&&(zumbis.length<lim||(algumCem&&zumbis.length<70))){
+    const c=sorteia(vivos), cemC=noCemiterio(c.x,c.z);
+    G.spawnT=(zumbis.length<lim?(cemC?.3:.6):1.5)/dz/(1+.4*fn)/nj;
+    const p=(cemC&&rnd()<.6?pontoCova(c.x,c.z):null)||pontoNascerMundo(c.x,c.z);
+    if(p)nascerZumbi(tipoPorNivel(cemC?nivel+2:nivel),null,p);
   }
+  // zumbi longe de todos some (o chefão não)
   for(let i=zumbis.length-1;i>=0;i--){
     const z=zumbis[i];
-    if(Math.hypot(z.x-P.x,z.z-P.z)>100){ scene.remove(z.g); zumbis.splice(i,1); }
+    if(z!==G.chefe&&!pertoDeJogador(z.x,z.z,100)){ scene.remove(z.g); zumbis.splice(i,1); if(REDE.papel==='host')REDE.sumidosZ.push(z.id); }
+  }
+  // Mundo aberto: de tempos em tempos aparece um chefão de elemento perto de alguém (o primeiro em 3 min, depois a cada 4 min)
+  if(!fuga){
+    G.chefeT-=dt;
+    if(G.chefeT<=0&&!G.chefe&&vivos.length){
+      const c=sorteia(vivos), p=pontoNascerMundo(c.x,c.z,32,10);
+      if(p){
+        G.chefeN++; const el=elementoDaVez(G.chefeN), E=ELEMENTOS[el];
+        criarChefe(G.chefeN,el,p); G.chefeT=240;
+        const b=E.sub+'. Ele aparece no mapa como um quadrado colorido.';
+        faixa(E.nome+' apareceu',b); somTom(90,45,1.2,.16,'sawtooth');
+        if(REDE.papel==='host'&&REDE.emJogo)transmitir({t:'aviso',a:E.nome+' apareceu',b:b});
+      }else G.chefeT=5;
+    }
   }
   G.lootT-=dt;
   if(G.lootT<=0){ G.lootT=10+10*(1-diaF); if(itensComuns()<45)itemMundo(); }   // de dia sai um item a cada 10 s; de noite, a cada 20 s
@@ -1871,11 +1981,11 @@ function porTesouro(t){
   if(locais[t.local])locais[t.local].vigiado=false;   // o prêmio voltou: os guardas voltam também
 }
 function atualizarTesouros(dt){
+  if(REDE.papel==='cliente'&&REDE.emJogo)return;   // com amigos, só o anfitrião repõe os prêmios e solta os guardas
   for(const t of tesouros)if(!t.item){ t.volta-=dt; if(t.volta<=0)porTesouro(t); }
-  if(REDE.papel==='cliente')return;   // com amigos, só o anfitrião solta os guardas
   for(const id in locais){
     const l=locais[id];
-    if(l.vigiado||!l.guardas.length||Math.hypot(P.x-l.x,P.z-l.z)>28)continue;
+    if(l.vigiado||!l.guardas.length||!pertoDeJogador(l.x,l.z,28))continue;
     const aqui=tesouros.filter(function(t){ return t.local===id&&t.item; });
     if(!aqui.length)continue;
     l.vigiado=true;
@@ -2004,6 +2114,163 @@ function explodir(x,y,z){
     zb.tonto=.6;
     ferirZumbi(zb,dano,zb.x,zb.y+s,zb.z,false,x,z,true);
   }
+}
+
+/* ---------- poderes dos chefões de elementos ---------- */
+// Perigos: "chama" (fogo no chão), "bolaFogo" e "cuspe" (voam em arco), "poca" (veneno no chão),
+// "gelo" (marca no chão e depois estacas de gelo) e "raio" (marca no chão e depois o raio).
+let perigos=[], queima=0, tLuzRaio=0;
+const TIPOS_PERIGO=['chama','bolaFogo','gelo','cuspe','poca','raio'];
+const geoDisco=new THREE.CircleGeometry(1,22), geoAnel=new THREE.RingGeometry(.72,1,36), geoBola=new THREE.SphereGeometry(1,10,8);
+const mChamaChao=new THREE.MeshBasicMaterial({color:0xff4a0a,transparent:true,opacity:.6,depthWrite:false});
+const mPoca=new THREE.MeshBasicMaterial({color:0x5fbf2a,transparent:true,opacity:.6,depthWrite:false});
+const mAnelGelo=new THREE.MeshBasicMaterial({color:0x2fa8ff,transparent:true,opacity:.85,side:THREE.DoubleSide,depthWrite:false});
+const mAnelRaio=new THREE.MeshBasicMaterial({color:0xf2e04a,transparent:true,opacity:.85,side:THREE.DoubleSide,depthWrite:false});
+const mBolaFogo=new THREE.MeshBasicMaterial({color:0xff8a2a}), mCuspe=new THREE.MeshBasicMaterial({color:0x8ee04a});
+const mEstaca=new THREE.MeshBasicMaterial({color:0xcff4ff,transparent:true,opacity:.9}), mRaioLuz=new THREE.MeshBasicMaterial({color:0xfffbd0,transparent:true,opacity:.95,depthWrite:false,fog:false});
+// com amigos, o anfitrião cria e manda para todos ("remoto" = veio por mensagem ou nasceu de outro perigo, não reenvia)
+function criarPerigo(tipo,x,y,z,vx,vy,vz,remoto){
+  if(REDE.papel==='cliente'&&REDE.emJogo&&!remoto)return;
+  if(REDE.papel==='host'&&REDE.emJogo&&!remoto)transmitir({t:'pg',p:[tipo,r2(x),r2(y),r2(z),r2(vx||0),r2(vy||0),r2(vz||0)]});
+  const p={tipo:tipo,x:x,y:y,z:z,vx:vx||0,vy:vy||0,vz:vz||0,t:0,g:new THREE.Group(),feito:false,r:2,vida:6};
+  p.g.position.set(x,y,z); scene.add(p.g);
+  if(tipo==='chama'||tipo==='poca'){
+    p.r=tipo==='chama'?1.25:2.2; p.vida=tipo==='chama'?5:7; p.dps=tipo==='chama'?14:10;
+    const m=new THREE.Mesh(geoDisco,(tipo==='chama'?mChamaChao:mPoca).clone()); m.rotation.x=-Math.PI/2; m.position.y=.09; m.scale.setScalar(p.r); p.g.add(m); p.disco=m;
+  }else if(tipo==='bolaFogo'||tipo==='cuspe'){
+    const m=new THREE.Mesh(geoBola,tipo==='bolaFogo'?mBolaFogo:mCuspe); m.scale.setScalar(tipo==='bolaFogo'?.42:.3); p.g.add(m);
+  }else{
+    // gelo e raio: primeiro aparece a marca no chão (dá tempo de sair), depois vem o golpe
+    p.r=tipo==='gelo'?2.6:2.2; p.aviso=tipo==='gelo'?1.1:1; p.vida=p.aviso+(tipo==='gelo'?.9:.35);
+    const m=new THREE.Mesh(geoAnel,(tipo==='gelo'?mAnelGelo:mAnelRaio).clone()); m.rotation.x=-Math.PI/2; m.position.y=.1; m.scale.setScalar(p.r); p.g.add(m); p.anel=m;
+    const d=new THREE.Mesh(geoDisco,m.material.clone()); d.rotation.x=-Math.PI/2; d.position.y=.09; d.material.opacity=.18; d.scale.setScalar(p.r); p.g.add(d); p.fundo=d;
+  }
+  perigos.push(p);
+  return p;
+}
+// joga uma bola em arco da cabeça do chefão até onde o jogador está (chega em 1,1 s)
+function lancarDoChefe(z,tipo,tx,ty,tz){
+  const s=z.t.s, x0=z.x+z.dx*.5*s, y0=z.y+1.8*s, z0=z.z+z.dz*.5*s, T=1.1;
+  criarPerigo(tipo,x0,y0,z0,(tx-x0)/T,(ty+.2-y0)/T+6*T,(tz-z0)/T);
+}
+function perigoPerto(p,r){ return Math.hypot(P.x-p.x,P.z-p.z)<(r||p.r)&&Math.abs(P.y-p.y)<1.7; }
+// dano aos poucos (fogo e veneno no chão): junta e tira de 4 em 4, para não piscar a tela toda hora
+function queimar(d){
+  if(P.caido||P.inv>0)return;
+  queima+=d; if(queima>=4){ const q=queima; queima=0; ferirJogador(q); }
+}
+function somPerto(x,z){ return Math.max(.15,1/(1+Math.hypot(x-P.x,z-P.z)/10)); }
+function impactoPerigo(p){
+  const ch=chaoEm(p.x,p.z,p.y+.3), a=somPerto(p.x,p.z);
+  if(p.tipo==='bolaFogo'){
+    for(let i=0;i<14;i++)soltar(rnd()<.7?mFogo:mFumaca,p.x,ch+.3,p.z,(rnd()-.5)*8,2+rnd()*5,(rnd()-.5)*8,.4+rnd()*.4,.1+rnd()*.1);
+    somRuido(500,.5,.45*a); somTom(160,50,.5,.15*a,'sawtooth');
+    if(perigoPerto({x:p.x,y:ch,z:p.z},2.8))ferirJogador(28*DIF[dif].dano);
+    criarPerigo('chama',p.x,ch,p.z,0,0,0,true);
+  }else{
+    for(let i=0;i<12;i++)soltar(matEl('veneno').part,p.x,ch+.2,p.z,(rnd()-.5)*6,1+rnd()*3,(rnd()-.5)*6,.4+rnd()*.3,.08+rnd()*.06);
+    somRuido(900,.25,.3*a);
+    if(perigoPerto({x:p.x,y:ch,z:p.z},2))ferirJogador(10*DIF[dif].dano);
+    criarPerigo('poca',p.x,ch,p.z,0,0,0,true);
+  }
+}
+function golpePerigo(p){
+  const a=somPerto(p.x,p.z);
+  if(p.tipo==='gelo'){
+    // estacas de gelo sobem do chão; quem está na marca leva dano e fica lento
+    for(let i=0;i<8;i++){
+      const ang=i*.785+rnd()*.4, r=i?.6+rnd()*(p.r-.7):0, h=1.2+rnd()*1.1, e=caixa(.32,h,.32,mEstaca,Math.cos(ang)*r,h/2,Math.sin(ang)*r,false);
+      e.rotation.set((rnd()-.5)*.5,rnd()*3,(rnd()-.5)*.5); p.g.add(e);
+    }
+    for(let i=0;i<10;i++)soltar(mEstaca,p.x,p.y+.5,p.z,(rnd()-.5)*6,2+rnd()*4,(rnd()-.5)*6,.5,.08);
+    somTom(2400,700,.3,.14*a,'triangle'); somRuido(3000,.35,.3*a);
+    if(perigoPerto(p)){ ferirJogador(30*DIF[dif].dano); P.lento=2.5; avisar('Você foi congelado: fica lento por um tempo'); }
+  }else{
+    // raio: um facho do céu até o chão e um clarão
+    const b=new THREE.Mesh(geo,mRaioLuz); b.scale.set(.3,60,.3); b.position.y=30; p.g.add(b); p.facho=b;
+    for(let i=0;i<14;i++)soltar(matEl('raio').part,p.x,p.y+.3,p.z,(rnd()-.5)*10,2+rnd()*6,(rnd()-.5)*10,.35,.07);
+    luzExplosao.color.setHex(0xfff2a0); luzExplosao.position.set(p.x,p.y+3,p.z); luzExplosao.intensity=5; tLuzRaio=.25;
+    somRuido(3200,.18,.55*a); somRuido(180,1.3,.6*a);
+    if(perigoPerto(p))ferirJogador(34*DIF[dif].dano);
+  }
+  if(p.anel){ p.anel.visible=false; p.fundo.visible=false; }
+}
+function tirarPerigo(i){ scene.remove(perigos[i].g); perigos.splice(i,1); }
+function atualizarPerigos(dt){
+  for(let i=perigos.length-1;i>=0;i--){
+    const p=perigos[i]; p.t+=dt;
+    if(p.tipo==='bolaFogo'||p.tipo==='cuspe'){
+      p.vy-=12*dt; p.x+=p.vx*dt; p.y+=p.vy*dt; p.z+=p.vz*dt; p.g.position.set(p.x,p.y,p.z);
+      if(rnd()<.7)soltar(p.tipo==='bolaFogo'?mFogo:matEl('veneno').part,p.x,p.y,p.z,(rnd()-.5),rnd(),(rnd()-.5),.3,.08);
+      if((p.vy<0&&p.y<=chaoEm(p.x,p.z,p.y)+.15)||p.t>4||dentroDeObstaculo(p.x,p.y,p.z)){ impactoPerigo(p); tirarPerigo(i); }
+      continue;
+    }
+    if(p.tipo==='chama'||p.tipo==='poca'){
+      const fim=p.vida-p.t;
+      p.disco.material.opacity=.6*Math.min(1,fim);
+      if(p.tipo==='chama'){
+        p.disco.scale.setScalar(p.r*(.92+Math.sin(p.t*14+p.x)*.06));
+        if(rnd()<dt*9)soltar(rnd()<.7?mFogo:matEl('fogo').brilha2,p.x+(rnd()-.5)*p.r,p.y+.2,p.z+(rnd()-.5)*p.r,(rnd()-.5)*.6,2+rnd()*2.5,(rnd()-.5)*.6,.4,.07);
+      }else if(rnd()<dt*4)soltar(matEl('veneno').part,p.x+(rnd()-.5)*p.r,p.y+.15,p.z+(rnd()-.5)*p.r,0,1.2+rnd(),0,.3,.07);
+      if(perigoPerto(p)){ queimar(p.dps*DIF[dif].dano*dt); if(p.tipo==='poca')P.lento=Math.max(P.lento||0,.4); }
+      if(fim<=0)tirarPerigo(i);
+      continue;
+    }
+    // gelo e raio
+    if(!p.feito){
+      const q=Math.min(1,p.t/p.aviso);
+      p.anel.scale.setScalar(p.r*(1.35-.35*q)); p.anel.material.opacity=.55+.45*Math.abs(Math.sin(p.t*12)); p.fundo.material.opacity=.18+.32*q;
+      if(p.t>=p.aviso){ p.feito=true; golpePerigo(p); }
+    }else if(p.facho){ p.facho.material.opacity=Math.max(0,1-(p.t-p.aviso)/.35); }
+    if(p.t>=p.vida)tirarPerigo(i);
+  }
+  if(tLuzRaio>0){ tLuzRaio-=dt; if(tLuzRaio<=0){ luzExplosao.intensity=0; luzExplosao.color.setHex(0xffa040); } }
+  if(P.lento>0)P.lento-=dt;
+}
+// o anfitrião (ou quem joga sozinho) decide quando cada chefão usa o poder; "tx, ty, tz" é o jogador que ele está caçando
+function poderChefe(z,dt,tx,ty,tz){
+  const d=Math.hypot(tx-z.x,tz-z.z), s=z.t.s;
+  if(z.nasce>.2)return;
+  z.hab-=dt;
+  if(z.el==='fogo'){
+    z.rastro-=dt; if(z.rastro<=0){ z.rastro=.5; criarPerigo('chama',z.x-z.dx*s*.5,z.y,z.z-z.dz*s*.5); }
+    if(z.hab<=0&&d>4&&d<34){ z.hab=5.5; lancarDoChefe(z,'bolaFogo',tx,ty,tz); somTom(300,120,.4,.12*perto(z),'sawtooth'); }
+  }else if(z.el==='gelo'){
+    if(z.hab<=0&&d<26){ z.hab=5.5; criarPerigo('gelo',tx,ty,tz); }
+  }else if(z.el==='veneno'){
+    if(z.hab<=0&&d>3&&d<30){ z.hab=3.6; lancarDoChefe(z,'cuspe',tx,ty,tz); somRuido(700,.3,.2*perto(z)); }
+  }else if(z.el==='raio'){
+    if(z.hab<=0&&d<32){ z.hab=4.5; criarPerigo('raio',tx,ty,tz); }
+    z.invT-=dt;
+    if(z.invT<=0&&z.carga<=0&&z.investida<=0&&d>5&&d<22&&Math.abs(ty-z.y)<1.4){ z.carga=.8; z.invT=7; somTom(200,900,.8,.12*perto(z),'sawtooth'); }
+  }
+}
+// gelo: perto do chefão de gelo o jogador fica mais lento
+function frioDoChefe(){
+  for(const z of zumbis)if(z.el==='gelo'&&Math.hypot(z.x-P.x,z.z-P.z)<7&&Math.abs(z.y-P.y)<2)return true;
+  return false;
+}
+// faíscas, flocos, gotas e brasas saindo dos chefões (em todos os jogos)
+function efeitoChefes(dt){
+  for(const z of zumbis){
+    if(!z.el||z.nasce>.5)continue;
+    const s=z.t.s, carga=z.carga>0||(z.flags&8), me=matEl(z.el);
+    if(z.aura){ const k=1+Math.sin(performance.now()*.004+z.fase)*.08; z.aura.scale.set(3*k,3.6*k,1); }
+    if(rnd()>dt*(carga?45:14))continue;
+    const a=rnd()*6.28, x=z.x+Math.cos(a)*.35*s, y=z.y+(.4+rnd()*1.7)*s, zz=z.z+Math.sin(a)*.35*s;
+    if(z.el==='fogo')soltar(rnd()<.6?mFogo:me.brilha2,x,y,zz,(rnd()-.5),2.5+rnd()*2,(rnd()-.5),.5,.07+rnd()*.05);
+    else if(z.el==='gelo')soltar(rnd()<.5?me.brilha:me.brilha2,x,y,zz,(rnd()-.5)*.6,.5,(rnd()-.5)*.6,.7,.06);
+    else if(z.el==='veneno')soltar(me.part,x,y,zz,(rnd()-.5)*.4,0,(rnd()-.5)*.4,.6,.07);
+    else soltar(rnd()<.5?me.brilha:me.brilha2,x,y,zz,(rnd()-.5)*(carga?8:4),(rnd()-.5)*(carga?8:4),(rnd()-.5)*(carga?8:4),.18,.05);
+  }
+}
+function elementoDaVez(n){ return ORDEM_EL[(Math.max(1,n|0)-1)%4]; }
+// chefão de força "k" (1 é o primeiro; cada um é maior, mais forte e um pouco mais rápido que o anterior)
+function criarChefe(k,el,pos){
+  const t=Object.assign({},ZT.chefe,{s:Math.min(5,2.6+.45*(k-1)),hp:2600*(1+.7*(k-1)),dano:38+10*(k-1),vel:Math.min(3.4,2.3+.15*(k-1)),pts:500*k});
+  const z=nascerZumbi('chefe',t,pos||null,null,el);
+  if(z)G.chefe=z;
+  return z;
 }
 
 /* ---------- arma na mão ---------- */
@@ -2158,9 +2425,11 @@ function etiqueta(txt,cor){
   s.scale.set(2,.5,1); s.position.y=1.7; return s;
 }
 let itens=[];
-function criarItem(tipo,arma,lugar){
+// "remoto": item que veio do anfitrião por mensagem (com amigos, só o anfitrião põe itens no mapa)
+function criarItem(tipo,arma,lugar,remoto){
+  if(REDE.papel==='cliente'&&REDE.emJogo&&!remoto)return null;
   if(tipo==='cura'){ tipo='item'; arma=sorteia(ITENS_SORTEIO); }   // "cura" agora vira um dos quatro itens, que vão para o inventário
-  const livres=SPOTS.filter(s=>s.livre&&Math.hypot(s.x-P.x,s.z-P.z)>6);
+  const livres=SPOTS.filter(s=>s.livre&&!pertoDeJogador(s.x,s.z,6));
   if(!lugar&&(!livres.length||itensComuns()>=(aberto()?48:11)))return;
   const sp=lugar||sorteia(livres); sp.livre=false;
   const cor=tipo==='arma'?(ARMAS[arma].cor||'#ebe6d6'):tipo==='municao'?'#f2c230':tipo==='galao'?'#ff5a4a':ITENS[arma].cor;
@@ -2173,37 +2442,95 @@ function criarItem(tipo,arma,lugar){
   const rotulo=etiqueta(nome,cor); if(tipo!=='galao'){ rotulo.scale.set(1.3,.325,1); rotulo.position.y=1.55; }
   g.add(cx,rotulo); g.position.set(sp.x,sp.y||0,sp.z); scene.add(g);
   if(tipo==='galao')g.add(caixa(.3,60,.3,new THREE.MeshBasicMaterial({color:0xff5a4a,transparent:true,opacity:.4,fog:false,depthWrite:false}),0,32,0,false));
-  const novo={tipo:tipo,arma:arma,x:sp.x,z:sp.z,y:sp.y||0,g:g,cx:cx,sp:sp,cor:cor,espera:0,mun:null};
+  const novo={tipo:tipo,arma:arma,x:sp.x,z:sp.z,y:sp.y||0,g:g,cx:cx,sp:sp,cor:cor,espera:0,mun:null,id:0,pedido:0};
+  // com amigos, o anfitrião dá um número para cada item e avisa todo mundo que ele apareceu
+  if(REDE.papel==='host'&&REDE.emJogo){ novo.id=++G.iid; REDE.itensNovos.push(novo); }
   itens.push(novo); return novo;
 }
-function pegarItens(){
-  for(let i=itens.length-1;i>=0;i--){
-    const it=itens[i]; if(it.espera>0||Math.abs(it.y-P.y)>1.6||Math.hypot(it.x-P.x,it.z-P.z)>1.5)continue;
-    if(it.tipo==='galao'){
-      G.gal++;
-      if(G.gal>=3)faixa('Tanque cheio','Corra para o helicóptero'); else avisar('Gasolina '+G.gal+' de 3');
-    }else if(it.tipo==='arma'){
-      const a=ARMAS[it.arma];
-      if(P.tem[it.arma]){ const mais=it.mun?it.mun.mag+it.mun.res:a.res; P.tem[it.arma].res+=mais; avisar(a.nome+': +'+mais+' balas'); }
-      else{
-        const onde=guardar({t:'arma',id:it.arma},true);
-        if(onde<0){ avisoCheio(); continue; }
-        P.tem[it.arma]=it.mun?{mag:it.mun.mag,res:it.mun.res}:{mag:a.mag,res:a.res};
-        if(onde<5){ selecionar(onde); avisar('Você pegou: '+a.nome); } else avisar(a.nome+' foi para a mochila');
-      }
-    }else if(it.tipo==='municao'){
-      let deu=false;
-      for(const k of ORDEM){ if(k!=='pistola'&&P.tem[k]){ P.tem[k].res+=k==='minigun'?100:ARMAS[k].mag*2; deu=true; } }
-      if(!deu)continue;
-      avisar('Munição para as armas pesadas');
-    }else{
-      if(!adicionarItem(it.arma)){ avisoCheio(); continue; }
-      avisar('Você pegou: '+ITENS[it.arma].nome);
+// dá para pegar? (sem pegar ainda: o amigo pergunta antes ao anfitrião)
+function podePegar(it){
+  if(it.tipo==='galao')return true;
+  const livre=P.slots.indexOf(null)>=0;
+  if(it.tipo==='arma')return !!P.tem[it.arma]||livre;
+  if(it.tipo==='municao'){ for(const k of ORDEM)if(k!=='pistola'&&P.tem[k])return true; return false; }
+  for(const s of P.slots)if(s&&s.t==='item'&&s.id===it.arma&&s.n<ITENS[it.arma].max)return true;
+  return livre;
+}
+// põe o item no inventário (ou conta o galão); devolve false se não coube
+function aplicarItem(it){
+  if(it.tipo==='galao'){ if(REDE.papel!=='cliente')pegouGalao(REDE.emJogo?(REDE.jogadores.host||{}).nome:''); }
+  else if(it.tipo==='arma'){
+    const a=ARMAS[it.arma];
+    if(P.tem[it.arma]){ const mais=it.mun?it.mun.mag+(it.mun.res===Infinity?0:it.mun.res):a.res; if(P.tem[it.arma].res!==Infinity)P.tem[it.arma].res+=mais; avisar(a.nome+': +'+mais+' balas'); }
+    else{
+      const onde=guardar({t:'arma',id:it.arma},true);
+      if(onde<0){ avisoCheio(); return false; }
+      P.tem[it.arma]=it.mun?{mag:it.mun.mag,res:it.mun.res}:{mag:a.mag,res:a.res};
+      if(onde<5){ selecionar(onde); avisar('Você pegou: '+a.nome); } else avisar(a.nome+' foi para a mochila');
     }
-    somTom(520,1040,.14,.12,'triangle');
-    if(it.tes){ it.tes.item=null; it.tes.volta=180; }   // prêmio garantido: volta em 3 minutos
-    it.sp.livre=true; scene.remove(it.g); itens.splice(i,1); slotsSujo=true;
+  }else if(it.tipo==='municao'){
+    let deu=false;
+    for(const k of ORDEM){ if(k!=='pistola'&&P.tem[k]){ P.tem[k].res+=k==='minigun'?100:ARMAS[k].mag*2; deu=true; } }
+    if(!deu)return false;
+    avisar('Munição para as armas pesadas');
+  }else{
+    if(!adicionarItem(it.arma)){ avisoCheio(); return false; }
+    avisar('Você pegou: '+ITENS[it.arma].nome);
   }
+  somTom(520,1040,.14,.12,'triangle'); slotsSujo=true;
+  return true;
+}
+// galão da Fuga: é do time todo; com amigos todos veem o aviso
+function pegouGalao(nome){
+  G.gal++;
+  const a=G.gal>=3?'Tanque cheio':'Gasolina '+G.gal+' de 3', b=(nome?nome+' pegou um galão. ':'')+(G.gal>=3?(REDE.emJogo?'Corram':'Corra')+' para o helicóptero':'Faltam '+(3-G.gal));
+  if(G.gal>=3||REDE.emJogo)faixa(a,b); else avisar(a);
+  if(REDE.papel==='host'&&REDE.emJogo)transmitir({t:'aviso',a:a,b:b});
+}
+// tira o item do mapa; com amigos, o anfitrião avisa todos que ele sumiu
+function tirarItem(i){
+  const it=itens[i];
+  if(it.tes&&typeof it.tes==='object'){ it.tes.item=null; it.tes.volta=180; }   // prêmio garantido: volta em 3 minutos
+  if(it.sp)it.sp.livre=true; scene.remove(it.g); itens.splice(i,1);
+  if(REDE.papel==='host'&&REDE.emJogo&&it.id)REDE.itensTirados.push(it.id);
+}
+function pegarItens(){
+  const amigo=REDE.papel==='cliente'&&REDE.emJogo;
+  for(let i=itens.length-1;i>=0;i--){
+    const it=itens[i]; if(it.espera>0||it.pedido>0||Math.abs(it.y-P.y)>1.6||Math.hypot(it.x-P.x,it.z-P.z)>1.5)continue;
+    if(P.caido)continue;
+    if(amigo){
+      // o amigo pede ao anfitrião; se ninguém pegou antes, ele responde "deu" e o item vai para o inventário
+      if(!podePegar(it)){ if(it.tipo!=='municao')avisoCheio(); continue; }
+      it.pedido=2; it.g.visible=false; enviarHost({t:'pega',id:it.id,x:r2(P.x),z:r2(P.z)});
+      continue;
+    }
+    if(!aplicarItem(it))continue;
+    tirarItem(i);
+  }
+}
+// mensagens dos itens com amigos: [número, tipo, arma ou item, x, y, z, munição, espera, prêmio]
+function dadosItem(it){ return [it.id,it.tipo,it.arma||'',r2(it.x),r2(it.y),r2(it.z),it.mun?[it.mun.mag,it.mun.res===Infinity?-1:it.mun.res]:0,Math.round(it.espera*10)/10,it.tes?1:0]; }
+function lerMun(m,id){ if(!Array.isArray(m)||!ARMAS[id])return null; return {mag:clamp(m[0]|0,0,ARMAS[id].mag),res:+m[1]<0?Infinity:clamp(m[1]|0,0,9999)}; }
+function itemValido(tipo,arma){
+  if(tipo==='arma')return Object.prototype.hasOwnProperty.call(ARMAS,arma)&&arma!=='maos';
+  if(tipo==='item')return Object.prototype.hasOwnProperty.call(ITENS,arma);
+  return tipo==='municao'||tipo==='galao';
+}
+function itemRemoto(e){
+  if(!Array.isArray(e))return;
+  const id=e[0]|0, tipo=String(e[1]), arma=e[2]?String(e[2]):undefined, x=+e[3], y=+e[4], z=+e[5];
+  if(!id||!itemValido(tipo,arma)||!isFinite(x)||!isFinite(y)||!isFinite(z)||itens.some(function(q){ return q.id===id; }))return;
+  const it=criarItem(tipo,arma,{x:x,z:z,y:y,livre:false},true); if(!it)return;
+  it.id=id; it.mun=lerMun(e[6],arma); it.espera=clamp(+e[7]||0,0,3); it.premio=!!e[8];
+}
+function tirarItemId(id){ const i=itens.findIndex(function(q){ return q.id===id; }); if(i>=0){ scene.remove(itens[i].g); itens.splice(i,1); } }
+// o anfitrião deixou o amigo pegar
+function recebeuItem(m){
+  tirarItemId(m.id|0);
+  const tipo=String(m.tipo), arma=m.arma?String(m.arma):undefined;
+  if(!itemValido(tipo,arma))return;
+  aplicarItem({tipo:tipo,arma:arma,mun:lerMun(m.mun,arma)});
 }
 
 /* ---------- inventário ---------- */
@@ -2266,7 +2593,16 @@ function largar(i){
   const s=P.slots[i]; if(!s)return;
   const fx=-Math.sin(P.yaw), fz=-Math.cos(P.yaw); let x=P.x+fx*1.3, z=P.z+fz*1.3;
   if(Math.abs(x)>HALF-1||Math.abs(z)>HALF-1||blocked[cel(x,z)]){ x=P.x; z=P.z; }
-  const lugar={x:x,z:z,y:P.y,livre:false}; let it;
+  const lugar={x:x,z:z,y:P.y,livre:false};
+  if(REDE.papel==='cliente'&&REDE.emJogo){
+    // com amigos, quem põe o item no chão é o anfitrião (aí ele aparece para todos)
+    const tem=s.t==='arma'?P.tem[s.id]:null;
+    enviarHost({t:'solta',tipo:s.t,arma:s.id,x:r2(x),y:r2(P.y),z:r2(z),mun:tem?[tem.mag,tem.res===Infinity?-1:tem.res]:0});
+    if(s.t==='arma'){ delete P.tem[s.id]; P.slots[i]=null; } else{ s.n--; if(s.n<=0)P.slots[i]=null; }
+    if(i===P.sel)selecionar(P.sel);
+    slotsSujo=true; return;
+  }
+  let it;
   if(s.t==='arma'){ it=criarItem('arma',s.id,lugar); it.mun={mag:P.tem[s.id].mag,res:P.tem[s.id].res}; delete P.tem[s.id]; P.slots[i]=null; }
   else{ it=criarItem('item',s.id,lugar); s.n--; if(s.n<=0)P.slots[i]=null; }
   it.espera=2.5;   // dá tempo de se afastar sem pegar de volta na hora
@@ -2370,6 +2706,8 @@ let slotsSujo=true, balX=0, balY=0;
 
 function limpar(){
   for(const g of granadas)scene.remove(g.m); granadas=[]; bolaFogo.visible=false; luzExplosao.intensity=0; tBola=0; G.tremor=0;
+  for(const p of perigos)scene.remove(p.g); perigos=[]; tLuzRaio=0; luzExplosao.color.setHex(0xffa040);
+  $('frio').style.opacity=0; cache.frio=1;
   for(const z of zumbis)scene.remove(z.g); for(const c of corpos)tirarCorpo(c); for(const it of itens)scene.remove(it.g);
   zumbis=[]; corpos=[]; itens=[]; for(const s of SPOTS)s.livre=true;
   for(const p of parts){p.m.visible=false;p.vida=0;}
@@ -2378,12 +2716,13 @@ function limpar(){
 }
 function sortearMapa(){ let i; do{ i=(rnd()*MAPAS.length)|0; }while(i===mapaAtual&&MAPAS.length>1); return i; }
 // "mapaForcado": número do mapa escolhido pelo anfitrião; "semTravar": não pede para travar o mouse (a partida começou por mensagem, sem clique)
-function comecar(modo,mesmoMapa,mapaForcado,semTravar){
+// "cantoForcado": na Fuga com amigos, o canto de saída sorteado pelo anfitrião (0 a 3)
+function comecar(modo,mesmoMapa,mapaForcado,semTravar,cantoForcado){
   ligarSom(); limpar();
   G.estado='iniciando';   // sai do estado da tela de preparação antes de ajustar a tela, para não reaplicar o deslocamento da câmera
   $('lobby').hidden=true; camera.clearViewOffset(); pj.visible=false; G.morte=-1; P.dor=0; P.passo=0;
   G.modo=modo; G.onda=0; G.pausaOnda=3.5; G.fila=[]; G.pontos=0; G.mortes=0; G.torreHp=1000; G.vm=DIF[dif].vel; G.tFluxo=0; G.tempo=0; G.lootT=10; G.spawnT=0;
-  G.relogio=0; G.fase=rnd()<.5?0:90;
+  G.relogio=0; G.fase=rnd()<.5?0:90; G.iid=0; G.chefeT=180; G.chefeN=0; P.lento=0; queima=0;
   diaF=hora==='dia'?1:hora==='noite'?0:(G.fase?0:1);
   montarMapa(aberto()?MUNDO:MAPAS[mapaForcado!==undefined&&mapaForcado!==null?mapaForcado:sortearMapa()],modo==='torre');
   G.cem=modo==='ondas'&&M.nome==='Cemitério';
@@ -2394,7 +2733,7 @@ function comecar(modo,mesmoMapa,mapaForcado,semTravar){
   G.gal=0; G.saida=null; G.avisoHeli=0; G.limite=DIF[dif].tempo;
   if(modo==='fuga'){
     // começa num canto do mundo, o helicóptero fica no canto oposto e os galões em três regiões do caminho
-    const ci=(rnd()*4)|0, ini=CANTOS[ci], fim=CANTOS[3-ci];
+    const ci=cantoForcado>=0&&cantoForcado<4?cantoForcado|0:(rnd()*4)|0, ini=CANTOS[ci], fim=CANTOS[3-ci];
     P.x=ini[0]; P.z=ini[1]; P.yaw=Math.atan2(-(fim[0]-ini[0]),-(fim[1]-ini[1]));
     G.saida={x:fim[0],z:fim[1]}; heliG.position.set(fim[0],0,fim[1]); heliG.visible=true;
     const cand=tilesG.filter(t=>!(Math.abs(t.x-ini[0])<40&&Math.abs(t.z-ini[1])<40)&&!(Math.abs(t.x-fim[0])<40&&Math.abs(t.z-fim[1])<40));
@@ -2441,7 +2780,7 @@ function iniciarOnda(n){
   if(REDE.papel==='host')transmitir({t:'onda',n:n,q:G.fila.length});
 }
 function avisoOnda(n,q){
-  if(n%5===0)faixa('Chefão','Onda '+n+': ele é gigante e aguenta muito tiro'); else faixa('Onda '+n,q+' zumbis');
+  if(n%5===0){ const E=ELEMENTOS[elementoDaVez(n/5)]; faixa(E.nome,'Onda '+n+': '+E.sub); } else faixa('Onda '+n,q+' zumbis');
   somTom(180,90,.5,.12,'sawtooth'); if(n%5===0)somTom(90,45,1.2,.16,'sawtooth');
 }
 // itens que aparecem a cada onda (com amigos, cada jogador ganha os seus)
@@ -2461,7 +2800,7 @@ function acabar(titulo,sub,vitoria){
   // com amigos o placar é do time e não entra nos recordes de quem joga sozinho
   const emGrupo=!!REDE.papel, cr=chaveRec(G.modo), ant=recordes[cr], novo=!emGrupo&&(!ant||G.pontos>ant.pts);
   if(novo){ recordes[cr]={onda:G.onda,pts:G.pontos,t:vitoria?Math.round(G.tempo):0}; try{localStorage.setItem('zonaz_recordes',JSON.stringify(recordes));}catch(e){} }
-  $('fimTitulo').textContent=titulo; $('fimSub').textContent=sub+' Modo: '+(emGrupo?'Com amigos':MODOS[G.modo])+' ('+DIF[dif].nome.toLowerCase()+'). Mapa: '+M.nome+'.';
+  $('fimTitulo').textContent=titulo; $('fimSub').textContent=sub+' Modo: '+(emGrupo?'Com amigos, '+MODOS[G.modo]:MODOS[G.modo])+' ('+DIF[dif].nome.toLowerCase()+'). Mapa: '+M.nome+'.';
   $('fimOnda').textContent=G.onda; $('fimMortes').textContent=G.mortes; $('fimPontos').textContent=G.pontos;
   $('fimRec').textContent=emGrupo?'—':recordes[cr].pts; $('novoRec').hidden=!(novo&&G.pontos>0);
   $('bDeNovo').textContent=emGrupo?'Voltar à sala':'Jogar de novo'; $('bMenu').textContent=emGrupo?'Sair da sala':'Menu';
@@ -2620,6 +2959,7 @@ function ferirZumbi(z,dano,x,y,zz,cab,sx,sz,expl){
   if(z.hp<=0){
     const i=zumbis.indexOf(z); if(i>=0)zumbis.splice(i,1);
     if(z.brilho)z.brilho.visible=false;
+    if(z.aura)z.aura.visible=false;
     // cada morte cai de um jeito; tiro na cabeça que mata arranca a cabeça
     const semCab=!!cab, modo=modoQueda(z,dano,cab,expl,ex,ez);
     corpos.push(novoCorpo(z,modo,semCab,ex,ez));
@@ -2627,7 +2967,7 @@ function ferirZumbi(z,dano,x,y,zz,cab,sx,sz,expl){
     G.mortes++; G.pontos+=Math.round((z.t.pts+(z.var?VARIANTES[z.var].pts:0))*(1+.5*(1-diaF))); somMorte(z); mancha(z.x,z.z,.9*z.t.s,z.y);
     soltarItem(z);
     if(REDE.papel==='host'){ REDE.mortosZ.push(z.id); REDE.mortosInfo.push([z.id,modo,semCab?1:0,r2(ex),r2(ez)]); }
-    if(z===G.chefe){ G.chefe=null; faixa('Chefão derrotado','+'+z.t.pts+' pontos'); }
+    if(z===G.chefe){ G.chefe=null; faixa((z.el?ELEMENTOS[z.el].nome:'Chefão')+' derrotado','+'+z.t.pts+' pontos'); }
   }else{
     somDano(z); if(rnd()<.25)mancha(z.x,z.z,.3*z.t.s,z.y);
   }
@@ -2780,7 +3120,10 @@ function atualizar(dt){
   P.mov=P.caido?0:corre?2:andando?1:0;   // para os amigos verem o boneco andando ou correndo
   if(corre){ if(!(P.infEst>0))P.est-=12*DIF[dif].est*dt; P.tEst=.7; if(P.est<=0){ P.est=0; P.cansado=true; avisar('Você está cansado'); } }
   else{ P.tEst-=dt; if(P.tEst<=0)P.est=Math.min(100,P.est+(andando?12:22)*dt); if(P.cansado&&P.est>=30)P.cansado=false; }
-  const vel=(corre?8.4:P.cansado?4.3:5.2)*a.peso*(mirando?.6:1);
+  // gelo: congelado (estacas do chefão de gelo) ou perto dele, o jogador fica mais lento; a borda da tela fica azul
+  const frio=P.lento>0?.55:frioDoChefe()?.65:1;
+  if(cache.frio!==frio){ cache.frio=frio; $('frio').style.opacity=frio<.6?.9:frio<1?.55:0; }
+  const vel=(corre?8.4:P.cansado?4.3:5.2)*a.peso*(mirando?.6:1)*frio;
   const fx=-Math.sin(P.yaw), fz=-Math.cos(P.yaw), rx=Math.cos(P.yaw), rz=-Math.sin(P.yaw);
   P.x+=(fx*mz+rx*mx)*vel*dt; P.z+=(fz*mz+rz*mx)*vel*dt;
   empurrar(P,.4,P.y); empurrar(P,.4,P.y);   // duas passadas: nos cantos, sair de uma parede não deixa entrar na outra
@@ -2872,7 +3215,7 @@ function atualizar(dt){
   if(G.tremor>0){ camera.rotation.x+=(rnd()-.5)*G.tremor*.12; camera.rotation.y+=(rnd()-.5)*G.tremor*.12; }   // explosão perto
 
   // ondas
-  if(aberto()){ atualizarMundo(dt); if(G.estado!=='jogando')return; }
+  if(aberto()){ atualizarMundo(dt); if(G.estado==='fim')return; }
   else if(REDE.papel==='cliente'){ /* com amigos, quem cuida das ondas é o anfitrião */ }
   else if(G.pausaOnda>0){ G.pausaOnda-=dt; if(G.pausaOnda<=0)iniciarOnda(G.onda+1); }
   else{
@@ -2881,9 +3224,9 @@ function atualizar(dt){
     if(G.fila.length&&G.spawnT<=0&&zumbis.length<Math.min(60,(G.cem?44:30)*(dz>1?1.4:1)*(1+.3*fn))){
       const tipoZ=G.fila.pop();
       if(tipoZ==='chefe'){
-        // cada chefão é maior, mais forte e um pouco mais rápido que o anterior
-        const k=G.onda/5;
-        G.chefe=nascerZumbi('chefe',Object.assign({},ZT.chefe,{s:Math.min(5,2.6+.45*(k-1)),hp:2600*(1+.7*(k-1)),dano:38+10*(k-1),vel:Math.min(3.4,2.3+.15*(k-1)),pts:500*k}));
+        // cada chefão é maior, mais forte e um pouco mais rápido que o anterior, e cada um tem um elemento
+        const k=Math.max(1,Math.round(G.onda/5));
+        criarChefe(k,elementoDaVez(k));
       }else nascerZumbi(tipoZ);
       G.spawnT=Math.max(.25,.8-G.onda*.03)*(G.cem?.5:1)/dz/(1+.4*fn);
     }
@@ -2933,7 +3276,22 @@ function atualizar(dt){
     z.ataca=alcance;
     if(z.nasce>0)z.nasce=Math.max(0,z.nasce-dt*1.8);
     if(z.tonto>0)z.tonto-=dt;
-    if(alcance){
+    if(z.el)poderChefe(z,dt,tx,ty,tz);
+    if(z.carga>0||z.investida>0){
+      // chefão de raio: para e carrega (braços para cima, faíscas) e depois dispara em linha reta
+      if(z.carga>0){
+        z.carga-=dt; z.be.rotation.x=z.bd.rotation.x=-2.6;
+        const d=Math.hypot(tx-z.x,tz-z.z)||1; z.dx=(tx-z.x)/d; z.dz=(tz-z.z)/d;
+        if(z.carga<=0){ z.investida=.7; z.ix=z.dx; z.iz=z.dz; z.acertou=false; somRuido(2600,.3,.3*perto(z)); }
+      }else{
+        z.investida-=dt; z.x+=z.ix*15*dt; z.z+=z.iz*15*dt; z.be.rotation.x=z.bd.rotation.x=-1.2;
+        if(!z.acertou&&nivel&&Math.hypot(tx-z.x,tz-z.z)<z.r+1){
+          z.acertou=true; const dano=30*DIF[dif].dano;
+          if(alvoId&&alvoId!=='host')enviar(alvoId,{t:'dano',d:Math.round(dano)});
+          else{ ferirJogador(dano); if(!REDE.papel&&G.estado!=='jogando')return; }
+        }
+      }
+    }else if(alcance){
       z.atk-=dt;
       const d=Math.hypot(tx-z.x,tz-z.z)||1; z.dx=(tx-z.x)/d; z.dz=(tz-z.z)/d;
       if(z.atk<=0){
@@ -2973,9 +3331,15 @@ function atualizar(dt){
   }
 
   atualizarGranadas(dt);
+  atualizarPerigos(dt);
+  efeitoChefes(dt);
   atualizarManchas(dt);
   // itens
-  for(const it of itens){ if(it.espera>0)it.espera-=dt; it.cx.rotation.y+=dt*1.5; it.cx.position.y=.8+Math.sin(agora*2+it.x)*.12; }
+  for(const it of itens){
+    if(it.espera>0)it.espera-=dt;
+    if(it.pedido>0){ it.pedido-=dt; if(it.pedido<=0)it.g.visible=true; }   // o anfitrião não respondeu: o item volta a aparecer
+    it.cx.rotation.y+=dt*1.5; it.cx.position.y=.8+Math.sin(agora*2+it.x)*.12;
+  }
   atualizarTesouros(dt);
   pegarItens();
   farol.rotation.y+=dt;
@@ -3007,8 +3371,9 @@ function hud(dt){
   if(cache.inf!==inf){ cache.inf=inf; $('estBarra').classList.toggle('inf',inf); }
   por('estRot',inf?'Estamina infinita · '+Math.ceil(P.infEst)+' s':'Estamina');
   // granadas que tem no inventário
-  let nb=0; for(const s of P.slots)if(s&&s.t==='item'&&s.id==='granada')nb+=s.n;
-  por('bombas',nb?'Granadas: '+nb+(toqueModo?' · botão Bomba':' · tecla G'):'');
+  let nb=0, nc=0; for(const s of P.slots)if(s&&s.t==='item'){ if(s.id==='granada')nb+=s.n; else nc+=s.n; }
+  por('bombas',nb?'Granadas: '+nb+(toqueModo?'':' · tecla G'):'');
+  if(toqueModo){ por('nBomba',nb?String(nb):''); por('nCura',nc?String(nc):''); }   // números nos botões do celular
   // intervalo entre as ondas: contagem para a próxima
   if(G.modo==='ondas'){
     const resta=REDE.papel==='cliente'?REDE.pausaHost:(G.onda>=1?G.pausaOnda:0), mostra=resta>0;
@@ -3024,7 +3389,11 @@ function hud(dt){
   // barra de vida do chefão, no topo
   const ch=G.chefe;
   if(cache.chefeOn!==!!ch){ cache.chefeOn=!!ch; $('torreBox').hidden=!ch; }
-  if(ch){ const t=Math.max(0,Math.round(ch.hp/ch.hpMax*100)); if(cache.torre!==t){ cache.torre=t; $('torreBarra').style.width=t+'%'; } }
+  if(ch){
+    // nome e cor do elemento do chefão em cima da barra
+    if(cache.chefeZ!==ch){ cache.chefeZ=ch; const E=ELEMENTOS[ch.el]; $('chefeNome').textContent=E?E.nome:'Chefão'; $('chefeNome').style.color=E?E.css:''; $('torreBarra').style.background=E?E.css:''; }
+    const t=Math.max(0,Math.round(ch.hp/ch.hpMax*100)); if(cache.torre!==t){ cache.torre=t; $('torreBarra').style.width=t+'%'; }
+  }
   $('recarga').hidden=!(P.rec>0);
   if(slotsSujo){ slotsSujo=false; desenharHotbar(); }
   const v=$('vinheta'); if(v.style.opacity>0)v.style.opacity=Math.max(0,v.style.opacity-dt*1.6);
@@ -3052,6 +3421,12 @@ function desenharMapa(){
   if(G.modo==='torre'){ mc.fillStyle='#4cc9f0'; mc.fillRect((-2-ox)*k,(-2-oz)*k,4*k,4*k); }
   // zumbis: vermelho; policial azul, militar amarelo-esverdeado e médico branco, um pouco maiores
   for(const z of zumbis){
+    if(z.el){
+      // chefão de elemento: quadrado grande na cor dele; longe, fica na borda do mapa apontando a direção
+      const x=clamp((z.x-ox)*k,7,S-7), y=clamp((z.z-oz)*k,7,S-7);
+      mc.fillStyle=ELEMENTOS[z.el].css; mc.strokeStyle='#0d1418'; mc.lineWidth=1.5; mc.fillRect(x-6,y-6,12,12); mc.strokeRect(x-6,y-6,12,12);
+      continue;
+    }
     const c=COR_MAPA_ZUMBI[z.var]; mc.fillStyle=c||'#e2452f';
     if(c)mc.fillRect((z.x-ox)*k-2.5,(z.z-oz)*k-2.5,5,5); else mc.fillRect((z.x-ox)*k-1.5,(z.z-oz)*k-1.5,3,3);
   }
@@ -3068,7 +3443,7 @@ function desenharMapa(){
     else if(it.tipo==='municao'){ mc.fillStyle='#f2c230'; mc.beginPath(); mc.arc(x,y,3.5,0,6.3); mc.fill(); }
     else{ mc.fillStyle='#6fdc6f'; mc.fillRect(x-4,y-1.5,8,3); mc.fillRect(x-1.5,y-4,3,8); }
     // prêmio garantido: anel dourado em volta
-    if(it.tes){ mc.strokeStyle='#f2c230'; mc.lineWidth=1.5; mc.beginPath(); mc.arc(x,y,8.5,0,6.3); mc.stroke(); }
+    if(it.tes||it.premio){ mc.strokeStyle='#f2c230'; mc.lineWidth=1.5; mc.beginPath(); mc.arc(x,y,8.5,0,6.3); mc.stroke(); }
     // item no andar de cima da escola: triângulo branco apontando para cima
     if(it.y>1){ mc.fillStyle='#ffffff'; mc.strokeStyle='#0d1418'; mc.lineWidth=1; mc.beginPath(); mc.moveTo(x+6,y-10); mc.lineTo(x+10,y-4); mc.lineTo(x+2,y-4); mc.closePath(); mc.fill(); mc.stroke(); }
   }
@@ -3079,7 +3454,7 @@ function desenharMapa(){
   // amigos: bolinha azul-clara (vermelha com X se caiu)
   if(REDE.emJogo)for(const id of listaIds()){
     const j=REDE.jogadores[id]; if(id===REDE.meuId||!j||j.x===undefined)continue;
-    const x=(j.x-ox)*k, y=(j.z-oz)*k;
+    const x=clamp((j.x-ox)*k,6,S-6), y=clamp((j.z-oz)*k,6,S-6);   // amigo longe fica na borda, na direção dele
     mc.fillStyle=j.k?'#e2452f':'#7fd6f5'; mc.strokeStyle='#0d1418'; mc.lineWidth=1.5;
     mc.beginPath(); mc.arc(x,y,4.5,0,6.3); mc.fill(); mc.stroke();
     if(j.k){ mc.strokeStyle='#ffffff'; mc.beginPath(); mc.moveTo(x-3,y-3); mc.lineTo(x+3,y+3); mc.moveTo(x+3,y-3); mc.lineTo(x-3,y+3); mc.stroke(); }
@@ -3289,7 +3664,7 @@ $('bInstalar').addEventListener('click',function(){
 });
 window.addEventListener('appinstalled',function(){ $('instalarBox').hidden=true; });
 // no programa de Windows aparece o botão de sair (no navegador quem fecha é a aba)
-if(window.ZZ_DESKTOP===true){ $('sairBox').hidden=false; $('bSair').addEventListener('click',function(){ window.close(); }); }
+if(window.ZZ_DESKTOP===true){ $('sairBox').hidden=false; $('bFecharJogo').addEventListener('click',function(){ window.close(); }); }
 (function(){
   // iPhone e iPad não têm botão de instalar: mostra como fazer pelo Safari
   const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -3326,15 +3701,16 @@ $('bGraf').addEventListener('click',function(){
   aplicarGraf();
 });
 
-/* ---------- jogar com amigos (modo Ondas em grupo, de 2 a 4 jogadores) ---------- */
-// Quem cria a sala é o anfitrião: o jogo dele controla os zumbis, as ondas, os pontos e quem levanta quem.
+/* ---------- jogar com amigos (Ondas, Mundo aberto ou Fuga em grupo, de 2 a 4 jogadores) ---------- */
+// Quem cria a sala é o anfitrião: o jogo dele controla os zumbis, as ondas, os itens do mapa, os pontos e quem levanta quem.
 // Cada jogador controla o próprio boneco e manda para o anfitrião onde está, para onde olha e em qual zumbi acertou.
 // A conexão é direta entre os navegadores (WebRTC), pela biblioteca PeerJS; o servidor gratuito do PeerJS só serve
-// para os jogadores se acharem pelo código da sala. Itens são de cada um: cada jogador vê e pega os seus.
+// para os jogadores se acharem pelo código da sala. Os itens do mapa são do time: quando alguém pega, some para todos.
 const SITE_JOGO='https://jogozonaz.github.io/zona-z/';
+const MODOS_SALA=['ondas','mundo','fuga'];
 const REDE={papel:null,peer:null,codigo:'',meuId:'host',conns:{},host:null,jogadores:{},ordem:[],emJogo:false,espera:null,
-  difAntes:null,horaAntes:null,difHost:'medio',tick:0,tickZ:0,tickClima:0,tickEquipe:0,novosZ:[],mortosZ:[],mortosInfo:[],
-  campos:{},reviver:{},mapaZ:{},bonecos:{},filaHost:0,meuRv:0,pausaHost:0};
+  difAntes:null,horaAntes:null,difHost:'medio',modoSala:'ondas',modoHost:'ondas',tick:0,tickZ:0,tickClima:0,tickEquipe:0,novosZ:[],mortosZ:[],mortosInfo:[],sumidosZ:[],
+  itensNovos:[],itensTirados:[],campos:{},reviver:{},mapaZ:{},bonecos:{},filaHost:0,meuRv:0,pausaHost:0};
 const LETRAS_SALA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';   // sem 0, O, 1 e I, que se confundem
 // o modo com amigos funciona no site do GitHub, no computador (localhost) e no programa de Windows (ZZ_DESKTOP)
 function podeRede(){ return /github\.io$/.test(location.hostname)||location.hostname==='localhost'||location.hostname==='127.0.0.1'||window.ZZ_DESKTOP===true; }
@@ -3410,10 +3786,11 @@ function desenharSala(){
     li.appendChild(em); ul.appendChild(li);
   }
   const host=REDE.papel==='host', n=listaIds().length;
-  $('bComecarSala').hidden=!host; $('bDifSala').hidden=!host;
+  $('bComecarSala').hidden=!host; $('bDifSala').hidden=!host; $('bModoSala').hidden=!host;
   $('bDifSala').textContent='Dificuldade: '+DIF[dif].nome.toLowerCase();
+  $('bModoSala').textContent='Modo: '+MODOS[REDE.modoSala];
   if(host)statusSala(n<2?'Mande o convite e espere seus amigos entrarem. Dá para começar sozinho também.':n+' jogadores na sala. Quando todos estiverem prontos, clique em Começar partida.');
-  else statusSala('Você está na sala. Esperando o anfitrião começar a partida (dificuldade: '+(DIF[REDE.difHost]||DIF.medio).nome.toLowerCase()+').');
+  else statusSala('Você está na sala. Esperando o anfitrião começar a partida ('+MODOS[REDE.modoHost]+', '+(DIF[REDE.difHost]||DIF.medio).nome.toLowerCase()+').');
 }
 function voltarSala(){ sairDaPartida(); abrirSala(); }
 function limparRede(){
@@ -3482,10 +3859,33 @@ function hostRecebe(id,m){
     const z=zumbis.find(function(q){ return q.id===m.id; });
     if(z)ferirZumbi(z,clamp(+m.d||0,0,900),z.x,z.y+1.2*z.t.s,z.z,!!m.c,j.x,j.z);   // o empurrão sai de onde o amigo está
   }
+  else if(m.t==='pega'){
+    // o amigo quer pegar um item: se ainda está lá (e ele está perto), é dele; senão avisa que já foi
+    if(!REDE.emJogo)return;
+    const i=itens.findIndex(function(q){ return q.id===(m.id|0); });
+    // a posição que vem no pedido é a mais nova; se ela estiver muito longe da última conhecida, vale a última
+    let px=+m.x, pz=+m.z;
+    if(j.x===undefined||!isFinite(px)||!isFinite(pz)||Math.hypot(px-j.x,pz-j.z)>8){ px=j.x; pz=j.z; }
+    if(i<0||px===undefined||j.k||Math.hypot(itens[i].x-px,itens[i].z-pz)>3){ enviar(id,{t:'nao',id:m.id|0}); return; }
+    const it=itens[i];
+    if(it.tipo==='galao')pegouGalao(j.nome);
+    enviar(id,{t:'deu',id:it.id,tipo:it.tipo,arma:it.arma||'',mun:it.mun?[it.mun.mag,it.mun.res===Infinity?-1:it.mun.res]:0});
+    tirarItem(i);
+  }
+  else if(m.t==='solta'){
+    // o amigo largou algo do inventário: o anfitrião põe no chão para todos
+    if(!REDE.emJogo||j.x===undefined)return;
+    const tipo=m.tipo==='arma'?'arma':'item', arma=String(m.arma||'');
+    if(!itemValido(tipo,arma))return;
+    let x=+m.x, z=+m.z, y=+m.y;
+    if(!isFinite(x)||!isFinite(z)||!isFinite(y)||Math.hypot(x-j.x,z-j.z)>4){ x=j.x; z=j.z; y=j.y; }
+    const it=criarItem(tipo,arma,{x:clamp(x,-HALF+1,HALF-1),z:clamp(z,-HALF+1,HALF-1),y:y,livre:false});
+    if(it){ it.espera=2.5; if(tipo==='arma')it.mun=lerMun(m.mun,arma); }
+  }
   else if(m.t==='tiro'){ if(!REDE.emJogo)return; m.de=id; transmitir(m,id); verTiro(m); }
   else if(m.t==='granada'){ if(!REDE.emJogo)return; transmitir(m,id); granadaRemota(m); }   // o anfitrião simula a granada do amigo e tira a vida dos zumbis
 }
-function enviarSala(){ transmitir({t:'sala',dif:dif,jogadores:listaIds().map(function(id){ const j=REDE.jogadores[id]; return {id:id,nome:j.nome,visual:j.visual}; })}); }
+function enviarSala(){ transmitir({t:'sala',dif:dif,modo:REDE.modoSala,jogadores:listaIds().map(function(id){ const j=REDE.jogadores[id]; return {id:id,nome:j.nome,visual:j.visual}; })}); }
 function saiuJogador(id){
   const j=REDE.jogadores[id]; delete REDE.conns[id]; delete REDE.campos[id]; delete REDE.reviver[id];
   if(!j)return;
@@ -3495,7 +3895,7 @@ function saiuJogador(id){
 }
 function comecarSalaHost(){
   if(REDE.papel!=='host'||REDE.emJogo)return;
-  const m={t:'inicio',mapa:REDE.mapaTeste!==undefined?REDE.mapaTeste:(rnd()*MAPAS.length)|0,dif:dif,hora:hora,fase:rnd()<.5?0:90,ordem:listaIds()};
+  const m={t:'inicio',modo:REDE.modoSala,mapa:REDE.mapaTeste!==undefined?REDE.mapaTeste:(rnd()*MAPAS.length)|0,canto:(rnd()*4)|0,dif:dif,hora:hora,fase:rnd()<.5?0:90,ordem:listaIds()};
   transmitir(m); comecarCoop(m);
 }
 
@@ -3531,6 +3931,7 @@ function clienteRecebe(m){
     case 'bemvindo': REDE.meuId=String(m.id); desenharSala(); break;
     case 'sala': {
       REDE.difHost=DIF[m.dif]?m.dif:'medio';
+      REDE.modoHost=MODOS_SALA.indexOf(m.modo)>=0?m.modo:'ondas';
       const novos={}, ordem=[];
       for(const e of m.jogadores||[]){ const id=String(e.id); novos[id]=Object.assign(REDE.jogadores[id]||{},{id:id,nome:limpaNome(e.nome),visual:limpaVisual(e.visual)}); ordem.push(id); }
       for(const id in REDE.jogadores)if(!novos[id]){ removerBoneco(id); if(REDE.emJogo)avisar(REDE.jogadores[id].nome+' saiu da partida'); }
@@ -3545,15 +3946,29 @@ function clienteRecebe(m){
         if(e.id===REDE.meuId){ REDE.meuRv=+e.rv||0; continue; }
         j.x=+e.x||0; j.y=+e.y||0; j.z=+e.z||0; j.c=+e.c||0; j.p=+e.p||0; j.a=typeof e.a==='string'?e.a:''; j.m=e.m|0; j.k=e.k?1:0; j.h=+e.h||0; j.rv=+e.rv||0;
       }
-      G.pontos=m.pts|0; G.onda=m.o|0; G.mortes=m.mo|0; REDE.filaHost=m.q|0;
+      G.pontos=m.pts|0; G.mortes=m.mo|0; REDE.filaHost=m.q|0;
+      // nas ondas o número vem do anfitrião; no Mundo e na Fuga vem o tempo (o nível sai dele, com o aviso de subir)
+      if(aberto()){ const tm=+m.tm; if(isFinite(tm)&&Math.abs(tm-G.tempo)>.5)G.tempo=tm; G.gal=clamp(m.gal|0,0,3); }
+      else G.onda=m.o|0;
       break;
     case 'z': if(REDE.emJogo)espelharZumbis(m); break;
+    case 'it+': if(REDE.emJogo&&Array.isArray(m.l))for(const e of m.l)itemRemoto(e); break;
+    case 'it-': if(REDE.emJogo&&Array.isArray(m.l))for(const id of m.l)tirarItemId(id|0); break;
+    case 'deu': if(REDE.emJogo)recebeuItem(m); break;
+    case 'nao': if(REDE.emJogo){
+      // não deu para pegar: o item volta a aparecer (se outro jogador pegou, o "it-" do anfitrião já tirou ele)
+      const it=itens.find(function(q){ return q.id===(m.id|0); }); if(it){ it.pedido=.6; it.g.visible=true; }
+    } break;
+    case 'pg': if(REDE.emJogo&&Array.isArray(m.p)){
+      const p=m.p, v=p.slice(1,7).map(Number);
+      if(TIPOS_PERIGO.indexOf(p[0])>=0&&v.every(isFinite))criarPerigo(p[0],v[0],v[1],v[2],v[3],v[4],v[5],true);
+    } break;
     case 'tiro': if(REDE.emJogo)verTiro(m); break;
     case 'dano': if(REDE.emJogo)ferirJogador(+m.d||0); break;
     case 'levanta': if(REDE.emJogo)levantar(); break;
     case 'aviso': if(REDE.emJogo){ faixa(String(m.a||''),String(m.b||'')); somTom(440,880,.3,.1,'triangle'); } break;
-    case 'onda': if(REDE.emJogo){ G.onda=m.n|0; REDE.filaHost=m.q|0; REDE.pausaHost=0; avisoOnda(G.onda,REDE.filaHost); if(G.onda===1)itensDaOnda(1); } break;
-    case 'intervalo': if(REDE.emJogo){ REDE.pausaHost=+m.s||INTERVALO_ONDA; faixa(String(m.a||''),String(m.b||'')); somTom(440,880,.3,.1,'triangle'); itensDaOnda(m.n|0); } break;
+    case 'onda': if(REDE.emJogo){ G.onda=m.n|0; REDE.filaHost=m.q|0; REDE.pausaHost=0; avisoOnda(G.onda,REDE.filaHost); } break;
+    case 'intervalo': if(REDE.emJogo){ REDE.pausaHost=+m.s||INTERVALO_ONDA; faixa(String(m.a||''),String(m.b||'')); somTom(440,880,.3,.1,'triangle'); } break;
     case 'granada': if(REDE.emJogo)granadaRemota(m); break;
     case 'clima': if(REDE.emJogo)G.relogio=+m.r||0; break;
     case 'fim': if(REDE.emJogo)fimCoop(m); break;
@@ -3573,24 +3988,39 @@ function comecarCoop(m){
   if(REDE.difAntes===null){ REDE.difAntes=dif; REDE.horaAntes=hora; }
   if(DIF[m.dif])dif=m.dif;
   if(m.hora==='sorteio'||m.hora==='dia'||m.hora==='noite')hora=m.hora;
-  REDE.emJogo=true; REDE.campos={}; REDE.reviver={}; REDE.novosZ=[]; REDE.mortosZ=[]; REDE.mortosInfo=[]; REDE.mapaZ={}; REDE.filaHost=0; REDE.meuRv=0; REDE.pausaHost=0;
+  REDE.emJogo=true; REDE.campos={}; REDE.reviver={}; REDE.novosZ=[]; REDE.mortosZ=[]; REDE.mortosInfo=[]; REDE.sumidosZ=[]; REDE.mapaZ={}; REDE.filaHost=0; REDE.meuRv=0; REDE.pausaHost=0;
+  REDE.itensNovos=[]; REDE.itensTirados=[];
   REDE.tick=0; REDE.tickZ=0; REDE.tickClima=5; REDE.tickEquipe=0;
   removerBonecos(); $('sala').hidden=true;
-  comecar('ondas',false,clamp(m.mapa|0,0,MAPAS.length-1),REDE.papel==='cliente');
+  const modo=MODOS_SALA.indexOf(m.modo)>=0?m.modo:'ondas';
+  comecar(modo,false,clamp(m.mapa|0,0,MAPAS.length-1),REDE.papel==='cliente',clamp(m.canto|0,0,3));
   G.zid=0;
   G.fase=m.fase?90:0; G.relogio=0; diaF=hora==='dia'?1:hora==='noite'?0:(G.fase?0:1); aplicarClima();
-  // cada jogador começa um pouco ao lado do outro
+  // cada jogador começa um pouco ao lado do outro (no Mundo aberto e na Fuga, em volta do ponto de partida)
   const ordem=(m.ordem||[]).map(String), n=Math.max(1,ordem.length), i=Math.max(0,ordem.indexOf(REDE.meuId));
-  P.x=(i-(n-1)/2)*1.6; P.z=7; P.vidas=0; P.caido=false; P.inv=2;
-  ordem.forEach(function(id,k){ const j=REDE.jogadores[id]; if(j)Object.assign(j,{x:(k-(n-1)/2)*1.6,y:0,z:7,c:0,p:0,a:'pistola',m:0,k:0,h:100,rv:0}); });
+  const bx=modo==='ondas'?0:P.x, bz=modo==='ondas'?7:P.z;
+  const lugar=function(k){ const p={x:bx+(k-(n-1)/2)*1.6,z:bz}; if(blocked[cel(p.x,p.z)]){ p.x=bx; } return p; };
+  const eu=lugar(i); P.x=eu.x; P.z=eu.z; P.vidas=0; P.caido=false; P.inv=2;
+  ordem.forEach(function(id,k){ const j=REDE.jogadores[id], p=lugar(k); if(j)Object.assign(j,{x:p.x,y:0,z:p.z,c:0,p:0,a:'pistola',m:0,k:0,h:100,rv:0}); });
   if(REDE.papel==='cliente'){ G.pausaOnda=0; G.fila=[]; semTrava=false; avisar(toqueModo?'A partida começou!':'Clique na tela para mirar com o mouse'); }
   $('equipe').hidden=false;
-  $('modoNome').textContent='Com amigos · '+M.nome+' · '+DIF[dif].nome; $('ondaRot').textContent='Onda';
+  $('modoNome').textContent='Com amigos · '+(modo==='ondas'?M.nome:MODOS[modo])+' · '+DIF[dif].nome;
+}
+// fim da partida em grupo: quem decide é o anfitrião (sozinho, acaba direto)
+function terminar(titulo,sub,vitoria){
+  if(REDE.papel==='host'&&REDE.emJogo){ const m={t:'fim',o:G.onda,pts:G.pontos,mo:G.mortes,ti:titulo,su:sub,v:vitoria?1:0}; transmitir(m); fimCoop(m); }
+  else acabar(titulo,sub,vitoria);
 }
 function fimCoop(m){
   REDE.emJogo=false; G.pontos=m.pts|0; G.onda=(m.o|0)||G.onda; G.mortes=m.mo|0;
   removerBonecos(); $('equipe').hidden=true; $('coopMsg').hidden=true; $('pausa').hidden=true; $('inv').hidden=true;
-  acabar('Todos caíram','Vocês aguentaram até a onda '+G.onda+'.');
+  acabar(m.ti?String(m.ti).slice(0,80):'Todos caíram',m.su?String(m.su).slice(0,240):'Vocês aguentaram até a onda '+G.onda+'.',!!m.v);
+}
+// quando todos caem, a frase do fim depende do modo
+function textoTodosCairam(){
+  if(G.modo==='fuga')return 'Os zumbis pegaram todo mundo com '+G.gal+' de 3 galões.';
+  if(G.modo==='mundo')return 'Vocês sobreviveram '+Math.floor(G.tempo/60)+' min '+Math.floor(G.tempo%60)+' s e chegaram ao nível '+G.onda+'.';
+  return 'Vocês aguentaram até a onda '+G.onda+'.';
 }
 function levantar(){
   if(!P.caido)return;
@@ -3611,7 +4041,7 @@ function reviverTick(dt){
       if(c.id==='host')levantar(); else{ enviar(c.id,{t:'levanta'}); REDE.jogadores[c.id].k=0; REDE.jogadores[c.id].h=50; }
     }
   }
-  if(!vivos){ const m={t:'fim',o:G.onda,pts:G.pontos,mo:G.mortes}; transmitir(m); fimCoop(m); return true; }
+  if(!vivos){ terminar('Todos caíram',textoTodosCairam()); return true; }
   return false;
 }
 
@@ -3623,8 +4053,19 @@ function redeTick(dt){
     if(REDE.tick<=0){ REDE.tick=1/15; enviarHost({t:'eu',x:r2(P.x),y:r2(P.y),z:r2(P.z),c:r2(P.corpo),p:r2(P.pitch),a:P.arma==='maos'?'':P.arma,m:P.mov|0,k:P.caido?1:0,h:Math.round(P.hp)}); }
   }else if(REDE.papel==='host'){
     if(reviverTick(dt))return;   // a partida acabou
-    if(REDE.tick<=0){ REDE.tick=1/15; transmitir({t:'j',l:estadoJogadores(),pts:G.pontos,o:G.onda,mo:G.mortes,q:G.fila.length}); }
+    if(REDE.tick<=0){
+      REDE.tick=1/15;
+      const mj={t:'j',l:estadoJogadores(),pts:G.pontos,o:G.onda,mo:G.mortes,q:G.fila.length};
+      if(aberto()){ mj.tm=r2(G.tempo); mj.gal=G.gal; }
+      transmitir(mj);
+    }
     if(REDE.tickZ<=0){ REDE.tickZ=1/12; transmitir(fotoZumbis()); }
+    // itens que apareceram e sumiram no mapa (os que foram pegos)
+    if(REDE.itensNovos.length){
+      const l=[]; for(const it of REDE.itensNovos)if(itens.indexOf(it)>=0)l.push(dadosItem(it));
+      REDE.itensNovos=[]; if(l.length)transmitir({t:'it+',l:l});
+    }
+    if(REDE.itensTirados.length){ transmitir({t:'it-',l:REDE.itensTirados}); REDE.itensTirados=[]; }
     if(REDE.tickClima<=0){ REDE.tickClima=5; transmitir({t:'clima',r:r2(G.relogio)}); }
   }
   sincronizarBonecos(dt);
@@ -3642,10 +4083,11 @@ function estadoJogadores(){
 // foto dos zumbis: [número, x, y, z, direção, nascendo, sinais (1 atacando, 2 capacete, 4 atordoado), vida em %]
 function fotoZumbis(){
   const l=[];
-  for(const z of zumbis)l.push([z.id,r2(z.x),r2(z.y),r2(z.z),r2(z.g.rotation.y),Math.round(z.nasce*10)/10,(z.ataca?1:0)|(z.capacete?2:0)|(z.tonto>0?4:0),Math.round(clamp(z.hp/z.hpMax,0,1)*100)]);
+  for(const z of zumbis)l.push([z.id,r2(z.x),r2(z.y),r2(z.z),r2(z.g.rotation.y),Math.round(z.nasce*10)/10,(z.ataca?1:0)|(z.capacete?2:0)|(z.tonto>0?4:0)|(z.carga>0?8:0)|(z.investida>0?16:0),Math.round(clamp(z.hp/z.hpMax,0,1)*100)]);
   const m={t:'z',l:l};
   if(REDE.novosZ.length){ m.n=REDE.novosZ; REDE.novosZ=[]; }
   if(REDE.mortosZ.length){ m.d=REDE.mortosZ; REDE.mortosZ=[]; }
+  if(REDE.sumidosZ.length){ m.s=REDE.sumidosZ; REDE.sumidosZ=[]; }
   // como cada um morreu: [número, jeito de cair, sem cabeça, direção do empurrão x, z]
   if(REDE.mortosInfo.length){ m.dm=REDE.mortosInfo; REDE.mortosInfo=[]; }
   return m;
@@ -3653,10 +4095,10 @@ function fotoZumbis(){
 // amigo: cria, move e mata as cópias dos zumbis do anfitrião
 function criarEspelho(n){
   const id=n[0]; if(REDE.mapaZ[id])return;
-  const tipo=ZT[n[1]]?n[1]:'normal', vr=VARIANTES[n[2]]?n[2]:null;
+  const tipo=ZT[n[1]]?n[1]:'normal', vr=VARIANTES[n[2]]?n[2]:null, el=ELEMENTOS[n[4]]&&tipo==='chefe'?n[4]:null;
   const t=tipo==='chefe'?Object.assign({},ZT.chefe,{s:clamp(+n[3]||2.6,1,6)}):ZT[tipo];
-  const mm=criarZumbiMesh(t,vr); mm.g.visible=false;
-  const z={id:id,tipo:tipo,t:t,g:mm.g,tronco:mm.tronco,cabeca:mm.cabeca,pe:mm.pe,pd:mm.pd,be:mm.be,bd:mm.bd,brilho:mm.brilho,capacete:mm.capacete,var:vr,
+  const mm=criarZumbiMesh(t,vr,el); mm.g.visible=false;
+  const z={id:id,tipo:tipo,t:t,g:mm.g,tronco:mm.tronco,cabeca:mm.cabeca,pe:mm.pe,pd:mm.pd,be:mm.be,bd:mm.bd,brilho:mm.brilho,aura:mm.aura,capacete:mm.capacete,var:vr,el:el,
     x:0,y:0,z:0,tx:0,ty:0,tz:0,ry:0,try:0,r:.42*t.s,hp:100,hpMax:100,nasce:1,tonto:0,fase:rnd()*6,flags:0,novo:true,kx:0,kz:0,giro:0};
   scene.add(z.g); zumbis.push(z); REDE.mapaZ[id]=z;
   if(tipo==='chefe')G.chefe=z;
@@ -3673,20 +4115,26 @@ function espelharZumbis(m){
     if(z.novo){ z.novo=false; z.x=z.tx; z.y=z.ty; z.z=z.tz; z.ry=z.try; z.g.visible=true; }
     if(!(z.flags&2)&&z.capacete){ z.capacete.visible=false; z.capacete=null; somTom(2200,1400,.1,.12*perto(z),'triangle'); }
   }
+  // zumbis que ficaram longe de todos os jogadores e sumiram no jogo do anfitrião
+  if(Array.isArray(m.s))for(const id of m.s){
+    const z=REDE.mapaZ[id]; if(!z)continue; delete REDE.mapaZ[id];
+    const i=zumbis.indexOf(z); if(i>=0)zumbis.splice(i,1); scene.remove(z.g);
+  }
   const como={};
   if(Array.isArray(m.dm))for(const e of m.dm)if(Array.isArray(e))como[e[0]]=e;
   for(const id of m.d||[]){
     const z=REDE.mapaZ[id]; if(!z)continue; delete REDE.mapaZ[id];
     const i=zumbis.indexOf(z); if(i>=0)zumbis.splice(i,1);
     if(z.brilho)z.brilho.visible=false;
+    if(z.aura)z.aura.visible=false;
     // cai do mesmo jeito que no jogo do anfitrião (se a informação não veio, cai para trás)
     const e=como[id], modo=e&&e[1]>=0&&e[1]<=5?e[1]|0:0;
     let ex=e?clamp(+e[3]||0,-1,1):0, ez=e?clamp(+e[4]||0,-1,1):0;
     if(!ex&&!ez){ ex=-Math.sin(z.ry); ez=-Math.cos(z.ry); }
     z.kx=z.kz=0;
     z.g.visible=true; corpos.push(novoCorpo(z,modo,!!(e&&e[2]),ex,ez)); somMorte(z); mancha(z.x,z.z,.9*z.t.s,z.y);
-    soltarItem(z);   // o que o zumbi deixa cai para cada jogador
-    if(z===G.chefe){ G.chefe=null; faixa('Chefão derrotado',''); }
+    // o que o zumbi deixa no chão vem do anfitrião, como os outros itens
+    if(z===G.chefe){ G.chefe=null; faixa((z.el?ELEMENTOS[z.el].nome:'Chefão')+' derrotado',''); }
   }
 }
 function atualizarEspelho(dt,agora){
@@ -3696,7 +4144,9 @@ function atualizarEspelho(dt,agora){
     z.x+=(z.tx-z.x)*k; z.z+=(z.tz-z.z)*k; z.y+=(z.ty-z.y)*k;
     z.ry+=Math.atan2(Math.sin(z.try-z.ry),Math.cos(z.try-z.ry))*k;
     if(z.nasce>0)z.nasce=Math.max(0,z.nasce-dt*1.8);
-    if(z.flags&1)z.be.rotation.x=z.bd.rotation.x=-.6+Math.sin(agora*14+z.fase)*.5;
+    if(z.flags&8)z.be.rotation.x=z.bd.rotation.x=-2.6;   // chefão de raio carregando a investida
+    else if(z.flags&16)z.be.rotation.x=z.bd.rotation.x=-1.2;
+    else if(z.flags&1)z.be.rotation.x=z.bd.rotation.x=-.6+Math.sin(agora*14+z.fase)*.5;
     else{ const bal=Math.sin(agora*z.t.vel*2.6+z.fase)*.6; z.pe.rotation.x=bal; z.pd.rotation.x=-bal; z.be.rotation.x=-.15+bal*.15; z.bd.rotation.x=-.05-bal*.2; }
     z.tronco.rotation.x=(z.flags&4)?-.4:.14; z.tronco.rotation.z=Math.sin(agora*z.t.vel*1.3+z.fase)*.07;
     if(z.giro){ z.giro*=Math.exp(-dt*7); if(Math.abs(z.giro)<.01)z.giro=0; } z.tronco.rotation.y=z.giro;
@@ -3801,6 +4251,10 @@ $('bDifSala').addEventListener('click',function(){
   try{ localStorage.setItem('zonaz_dif',dif); }catch(e){}
   aplicarDif(); desenharSala(); enviarSala();
 });
+$('bModoSala').addEventListener('click',function(){
+  REDE.modoSala=MODOS_SALA[(MODOS_SALA.indexOf(REDE.modoSala)+1)%MODOS_SALA.length];
+  desenharSala(); enviarSala();
+});
 $('bCopiarConvite').addEventListener('click',function(){
   const b=$('bCopiarConvite'), t=textoConvite();
   const ok=function(){ b.textContent='Convite copiado!'; setTimeout(function(){ b.textContent='Copiar convite'; },2000); };
@@ -3813,11 +4267,15 @@ $('bCompartilhar').addEventListener('click',function(){
 // convite: quem abre o link com #sala-CÓDIGO cai direto na tela da sala, com o código preenchido.
 // Para testes automáticos: #teste-host-CÓDIGO cria a sala e começa quando alguém entra; #teste-cliente-CÓDIGO entra nela.
 (function(){
-  const h=location.hash, convite=h.match(/^#sala-([A-Za-z0-9]{5})$/), teste=h.match(/^#teste-(host|cliente)-([A-Z0-9]{5})$/);
+  const h=location.hash, convite=h.match(/^#sala-([A-Za-z0-9]{5})$/), teste=h.match(/^#teste-(host|cliente)-([A-Z0-9]{5})(?:-(ondas|mundo|fuga))?$/);
   if(convite)setTimeout(function(){ abrirSala(convite[1].toUpperCase()); },300);
   else if(teste){
-    window.ZZ={G:G,P:P,REDE:REDE,ferirZumbi:ferirZumbi,listaIds:listaIds,lancarGranada:lancarGranada,explodir:explodir,get zumbis(){ return zumbis; },get estado(){ return G.estado; },get granadas(){ return granadas; }};
+    window.ZZ={G:G,P:P,REDE:REDE,ferirZumbi:ferirZumbi,listaIds:listaIds,lancarGranada:lancarGranada,explodir:explodir,criarChefe:criarChefe,criarPerigo:criarPerigo,largar:largar,ferirJogador:ferirJogador,
+      get zumbis(){ return zumbis; },get estado(){ return G.estado; },get granadas(){ return granadas; },get itens(){ return itens; },get perigos(){ return perigos; }};
     graf='leve'; aplicarGraf(); REDE.mapaTeste=2;   // no teste: gráficos leves e sempre a Cidade, para o computador de teste aguentar
+    if(teste[3])REDE.modoSala=teste[3];
+    // no teste, os jogadores ficam imunes até o script de teste assumir (ZZ.assumiu), para ninguém morrer antes da hora
+    setInterval(function(){ if(REDE.emJogo&&!window.ZZ.assumiu)P.inv=Math.max(P.inv,3); },300);
     setTimeout(function(){
       $('tApelido').value=teste[1]==='host'?'Anfitriao':'Amigo com um apelido bem comprido';
       abrirSala();
