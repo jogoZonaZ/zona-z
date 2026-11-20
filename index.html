@@ -2425,6 +2425,31 @@ function etiqueta(txt,cor){
   s.scale.set(2,.5,1); s.position.y=1.7; return s;
 }
 let itens=[];
+// galão de gasolina de verdade (aquele de metal vermelho): corpo com o "X" estampado dos dois lados,
+// três alças em cima e o bico com tampa preta num canto. Brilha um pouco para ser achado de noite.
+function fazerGalao(){
+  const g=new THREE.Group();
+  const verm=new THREE.MeshLambertMaterial({color:0xc8261c,emissive:0x5a0c08,emissiveIntensity:.5});
+  const escuro=new THREE.MeshLambertMaterial({color:0x8e1912,emissive:0x3a0806,emissiveIntensity:.5});
+  const preto=mat(0x1a1a1a), metal=mat(0x9aa0a4);
+  const W=.56,H=.72,D=.26;
+  g.add(caixa(W,H,D,verm,0,0,0));
+  g.add(caixa(W+.02,.05,D+.02,escuro,0,H/2-.04,0),caixa(W+.02,.05,D+.02,escuro,0,-H/2+.04,0));   // frisos de cima e de baixo
+  // o "X" estampado em alto-relevo nas duas faces
+  const diag=Math.hypot(W-.12,H-.16), ang=Math.atan2(H-.16,W-.12);
+  for(const s of [1,-1])for(const r of [ang,-ang]){ const x=caixa(diag,.045,.02,escuro,0,0,s*(D/2+.008)); x.rotation.z=r; g.add(x); }
+  // três alças em cima
+  for(const x of [-.16,0,.16]){
+    g.add(caixa(.035,.1,.035,escuro,x-.03,H/2+.05,0),caixa(.035,.1,.035,escuro,x+.03,H/2+.05,0),caixa(.1,.035,.05,escuro,x,H/2+.1,0));
+  }
+  // bico inclinado com tampa preta, num canto de cima
+  const bico=new THREE.Group(); bico.position.set(W/2-.09,H/2+.02,0); bico.rotation.z=-.5;
+  const cano=new THREE.Mesh(new THREE.CylinderGeometry(.05,.06,.16,10),metal); cano.position.y=.08; bico.add(cano);
+  const tampa=new THREE.Mesh(new THREE.CylinderGeometry(.065,.065,.06,10),preto); tampa.position.y=.18; bico.add(tampa);
+  g.add(bico);
+  g.scale.setScalar(1.25);
+  return g;
+}
 // "remoto": item que veio do anfitrião por mensagem (com amigos, só o anfitrião põe itens no mapa)
 function criarItem(tipo,arma,lugar,remoto){
   if(REDE.papel==='cliente'&&REDE.emJogo&&!remoto)return null;
@@ -2438,7 +2463,7 @@ function criarItem(tipo,arma,lugar,remoto){
   if(tipo==='item'){ cx=fazerItem(arma); cx.scale.setScalar(3.5); cx.position.y=.8; }
   else if(tipo==='arma'){ cx=fazerArma(arma); cx.scale.setScalar(2.6); cx.position.y=.8; cx.rotation.z=.25; }   // a própria arma, girando no chão
   else if(tipo==='municao'){ cx=fazerMunicao(); cx.scale.setScalar(3.2); cx.position.y=.8; }
-  else cx=caixa(.7,.7,.7,new THREE.MeshLambertMaterial({color:cor,emissive:cor,emissiveIntensity:.35}),0,.8,0);
+  else{ cx=fazerGalao(); cx.position.y=.8; }
   const rotulo=etiqueta(nome,cor); if(tipo!=='galao'){ rotulo.scale.set(1.3,.325,1); rotulo.position.y=1.55; }
   g.add(cx,rotulo); g.position.set(sp.x,sp.y||0,sp.z); scene.add(g);
   if(tipo==='galao')g.add(caixa(.3,60,.3,new THREE.MeshBasicMaterial({color:0xff5a4a,transparent:true,opacity:.4,fog:false,depthWrite:false}),0,32,0,false));
